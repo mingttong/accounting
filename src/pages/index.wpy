@@ -1,0 +1,86 @@
+<template>
+    <view class="container">
+        <indexHead :income="totalIncome" :cost="totalCost"></indexHead>
+
+        <view class="account">
+            <!-- 月 -->
+            <view class="month list">
+                <view class="item">
+                    <view class="title">
+                        <view><text class="bold">3月</text> 2018</view>
+                        <view><text class="income">收:￥2000.00</text><text>支:￥1008.00</text></view>
+                    </view>
+
+                    <!-- 周 -->
+                    <view class="week list">
+                        <view class="item">
+                            <view class="title">
+                                <view>08 周四</view>
+                                <view><text class="income">收:￥200.00</text><text>支:￥300.00</text></view>
+                            </view>
+
+                            <view class="day list">
+                                <view class="item">
+                                    <view class="left">
+                                        <text class="type">工资薪水</text>
+                                        <text class="time">20:13</text>
+                                    </view>
+                                    <view class="right">￥200.00</view>
+                                </view>
+                            </view>
+
+                        </view>
+                    </view>
+
+                </view>
+            </view>
+        </view>
+
+        <button class="btn-account">记一笔</button>
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+import indexHead from '../components/index/head';
+
+export default class Index extends wepy.page {
+    data = {
+        totalIncome: '20000',
+        totalCost: '15200',
+    }
+    config = {
+        backgroundColor: '#eee',
+    }
+    components = {
+        indexHead,
+    }
+    onLoad() {
+        console.log('onLoad');
+    }
+}
+</script>
+
+<style lang="scss">
+.account {
+    width: 100%;
+    flex: 1;
+}
+
+.item .title {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 0 30rpx;
+    font-size: 28rpx;
+    color: #cccccc;
+}
+.week .item .title {
+    font-size: 24rpx;
+}
+
+.btn-account {
+    width: 100%;
+    margin-bottom: 40rpx;
+}
+</style>

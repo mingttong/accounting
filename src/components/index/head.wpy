@@ -1,0 +1,62 @@
+<template lang="wxml">
+    <view class="header-container">
+        <view class="box">
+            <view class="value">￥{{ income }}</view>
+            <view class="title">总收入</view>
+        </view>
+        <view class="box">
+            <view class="value">￥{{ cost }}</view>
+            <view class="title">总支出</view>
+        </view>
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+
+export default class Index extends wepy.component {
+    props = {
+        income: {
+            type: String,
+            default: '20.00万',
+        }, // 有可能为'200万‘这样的字符串
+        cost: {
+            type: String,
+            default: '10000.00',
+        },
+    };
+
+    onLoad() {
+        console.log('onLoad');
+    }
+}
+</script>
+
+<style lang="scss">
+    .header-container {
+        width: 100%;
+        height: 140rpx;
+        display: flex;
+        background-color: #f7f7fa;
+        box-shadow: 3rpx 3rpx 5rpx #888;
+
+        .box {
+            flex: auto;
+            margin-top: 30rpx;
+
+            .title, .value {
+                text-align: center;
+            }
+
+            .value {
+                font-weight: 600;
+                font-size: 28rpx;
+            }
+
+            .title {
+                font-size: 24rpx;
+                color: #ccc;
+            }
+        }
+    }
+</style>

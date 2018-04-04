@@ -1,0 +1,67 @@
+<template>
+    <view class="container">
+        <view class="userinfo">
+            <image
+            class="userinfo-avatar"
+            background-size="cover"
+            src="{{ avatar }}"></image>
+            <text class="userinfo-nickname">{{ nickName }}</text>
+        </view>
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+import mixin from './mixins';
+
+export default class Index extends wepy.page {
+    config = {
+        backgroundColor: '#eee',
+    }
+    mixins = [mixin]
+    data = {
+        avatar: '',
+        nickName: '',
+    }
+    async onLoad() {
+        console.log('onLoad');
+
+        try {
+            const {
+                avatarUrl,
+                nickName,
+                // gender,
+                // city,
+                // province,
+                // country,
+            } = await this.getUserInfo();
+
+            this.avatar = avatarUrl;
+            this.nickName = nickName;
+            this.$apply();
+        } catch (e) {
+            this.handleError(e);
+        }
+    }
+}
+</script>
+
+<style lang="scss">
+.container {
+    display: flex;
+
+    .userinfo {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-top: 40rpx;
+
+        .userinfo-avatar {
+            width: 128rpx;
+            height: 128rpx;
+            margin: 20rpx;
+            border-radius: 50%;
+        }
+    }
+}
+</style>
