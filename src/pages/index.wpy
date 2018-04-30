@@ -1,14 +1,27 @@
 <template>
     <view class="container">
-        <indexHead :income="totalIncome" :cost="totalCost"></indexHead>
+        <view class="header-container">
+            <view class="box">
+                <view class="value">￥{{ totalIncome }}</view>
+                <view class="title">总收入</view>
+            </view>
+            <view class="box">
+                <view class="value">￥{{ totalCost }}</view>
+                <view class="title">总支出</view>
+            </view>
+        </view>
 
         <view class="account">
             <!-- 月 -->
             <view class="month list">
                 <view class="item">
                     <view class="title">
-                        <view><text class="bold">3月</text> 2018</view>
-                        <view><text class="income">收:￥2000.00</text><text>支:￥1008.00</text></view>
+                        <view>
+                            <text class="bold">3月</text> 2018</view>
+                        <view>
+                            <text class="income">收:￥2000.00</text>
+                            <text>支:￥1008.00</text>
+                        </view>
                     </view>
 
                     <!-- 周 -->
@@ -16,7 +29,10 @@
                         <view class="item">
                             <view class="title">
                                 <view>08 周四</view>
-                                <view><text class="income">收:￥200.00</text><text>支:￥300.00</text></view>
+                                <view>
+                                    <text class="income">收:￥200.00</text>
+                                    <text>支:￥300.00</text>
+                                </view>
                             </view>
 
                             <view class="day list">
@@ -42,26 +58,51 @@
 
 <script>
 import wepy from 'wepy';
-import indexHead from '../components/index/head';
 
 export default class Index extends wepy.page {
     data = {
-        totalIncome: '20000',
-        totalCost: '15200',
-    }
+        totalIncome: '20.00万',
+        totalCost: '10000.00',
+    };
     config = {
-        backgroundColor: '#eee',
-    }
-    components = {
-        indexHead,
-    }
+        backgroundColor: '#EEEEEE',
+    };
+    components = {};
     onLoad() {
-        console.log('onLoad');
+
     }
 }
 </script>
 
 <style lang="scss">
+.header-container {
+    width: 100%;
+    height: 140rpx;
+    display: flex;
+    background-color: #f7f7fa;
+    box-shadow: 3rpx 3rpx 5rpx #888;
+
+    .box {
+        flex: auto;
+        margin-top: 30rpx;
+
+        .title,
+        .value {
+            text-align: center;
+        }
+
+        .value {
+            font-weight: 600;
+            font-size: 28rpx;
+        }
+
+        .title {
+            font-size: 24rpx;
+            color: #ccc;
+        }
+    }
+}
+
 .account {
     width: 100%;
     flex: 1;
@@ -71,7 +112,6 @@ export default class Index extends wepy.page {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    padding: 0 30rpx;
     font-size: 28rpx;
     color: #cccccc;
 }
@@ -81,6 +121,5 @@ export default class Index extends wepy.page {
 
 .btn-account {
     width: 100%;
-    margin-bottom: 40rpx;
 }
 </style>
