@@ -6,53 +6,90 @@
                 <view class="title">总收入</view>
             </view>
             <view class="box">
-                <view class="value">￥{{ totalCost }}</view>
+                <view class="value">￥{{ totaloutgo }}</view>
                 <view class="title">总支出</view>
             </view>
         </view>
 
         <view class="account">
             <!-- 月 -->
-            <view class="month list">
-                <view class="item">
-                    <view class="title">
-                        <view>
-                            <text class="bold">3月</text> 2018</view>
-                        <view>
-                            <text class="income">收:￥2000.00</text>
-                            <text>支:￥1008.00</text>
-                        </view>
+            <view class="month-item">
+                <view class="month-amount">
+                    <view class="date">
+                        <text class="first bold">12月</text>
+                        <text>2018</text>
                     </view>
-
-                    <!-- 周 -->
-                    <view class="week list">
-                        <view class="item">
-                            <view class="title">
-                                <view>08 周四</view>
-                                <view>
-                                    <text class="income">收:￥200.00</text>
-                                    <text>支:￥300.00</text>
-                                </view>
-                            </view>
-
-                            <view class="day list">
-                                <view class="item">
-                                    <view class="left">
-                                        <text class="type">工资薪水</text>
-                                        <text class="time">20:13</text>
-                                    </view>
-                                    <view class="right">￥200.00</view>
-                                </view>
-                            </view>
-
-                        </view>
+                    <view class="money">
+                        <text class="first">收:￥2000.00</text>
+                        <text>支:￥1008.00</text>
                     </view>
-
                 </view>
+
+                <!-- 天 -->
+                <view class="day-list">
+                    <view class="day-item">
+                        <view class="day-amount">
+                            <view class="date">
+                                <text class="first">08</text>
+                                <text>周四</text>
+                            </view>
+                            <view class="money">
+                                <text class="first">收:￥200.00</text>
+                                <text>支:￥300.00</text>
+                            </view>
+                        </view>
+
+                        <!-- 单条项目 -->
+                        <view class="single-list">
+                            <view class="single-item income">
+                                <view class="info">
+                                    <text class="">工资薪水</text>
+                                    <text class="time">20:13</text>
+                                </view>
+                                <view class="value">￥200.00</view>
+                            </view>
+
+                            <view class="single-item outgo last">
+                                <view class="info">
+                                    <text class="">早饭</text>
+                                    <text class="time">20:13</text>
+                                </view>
+                                <view class="value">￥200.00</view>
+                            </view>
+                        </view>
+
+                    </view>
+
+                    <view class="day-item last">
+                        <view class="day-amount">
+                            <view class="date">
+                                <text class="first">08</text>
+                                <text>周四</text>
+                            </view>
+                            <view class="money">
+                                <text class="first">收:￥200.00</text>
+                                <text>支:￥300.00</text>
+                            </view>
+                        </view>
+
+                        <!-- 单条项目 -->
+                        <view class="single-list">
+                            <view class="single-item last">
+                                <view class="info">
+                                    <text class="">工资薪水</text>
+                                    <text class="time">20:13</text>
+                                </view>
+                                <view class="value">￥200.00</view>
+                            </view>
+                        </view>
+
+                    </view>
+                </view>
+
             </view>
         </view>
 
-        <button class="btn-account">记一笔</button>
+        <button type="primary" class="btn-account">记一笔</button>
     </view>
 </template>
 
@@ -62,29 +99,45 @@ import wepy from 'wepy';
 export default class Index extends wepy.page {
     data = {
         totalIncome: '20.00万',
-        totalCost: '10000.00',
+        totaloutgo: '10000.00',
     };
     config = {
         backgroundColor: '#EEEEEE',
     };
     components = {};
-    onLoad() {
-
-    }
+    onLoad() {}
 }
 </script>
 
 <style lang="scss">
+@import '../mixin.scss';
+
+$space: 30rpx; // 账单列表默认间距
+$lightColor: #afafaf; // 浅色字色
+$amountFontSize: 26rpx;
+$amountMarginRight: 15rpx; // amount里，文字的间距
+
+// 工具样式，用于继承
+@mixin flex-between {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
 .header-container {
     width: 100%;
     height: 140rpx;
     display: flex;
-    background-color: #f7f7fa;
-    box-shadow: 3rpx 3rpx 5rpx #888;
+    background-color: #ffffff;
+    border-bottom: 1rpx solid #cccccc;
+    // box-shadow: 3rpx 3rpx 5rpx #888;
 
     .box {
         flex: auto;
-        margin-top: 30rpx;
+
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
 
         .title,
         .value {
@@ -93,7 +146,7 @@ export default class Index extends wepy.page {
 
         .value {
             font-weight: 600;
-            font-size: 28rpx;
+            font-size: 36rpx;
         }
 
         .title {
@@ -104,22 +157,85 @@ export default class Index extends wepy.page {
 }
 
 .account {
-    width: 100%;
-    flex: 1;
-}
+    margin-top: 50rpx;
 
-.item .title {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    font-size: 28rpx;
-    color: #cccccc;
-}
-.week .item .title {
-    font-size: 24rpx;
+    text.bold {
+        color: #666666;
+    }
+
+    .date .first {
+        display: inline-block;
+        width: 2 * $amountFontSize + 5rpx;
+        text-align: right;
+        margin-right: $amountMarginRight;
+    }
+
+    .money .first {
+        margin-right: $amountMarginRight;
+    }
+
+    .month-amount {
+        @include flex-between;
+        color: $lightColor;
+        font-size: $amountFontSize;
+        padding: 0 $space;
+        margin-bottom: $amountMarginRight;
+    }
+    .day-amount {
+        @include flex-between;
+        color: $lightColor;
+        font-size: $amountFontSize;
+        padding: 0 $space;
+    }
+
+    .day-list {
+        border-top: $border;
+        border-bottom: $border;
+        background-color: #fff;
+
+        .day-item {
+            padding-top: 10rpx;
+            border-bottom: $border;
+            .single-list {
+                padding-left: $space;
+
+                .single-item {
+                    @include flex-between;
+                    align-items: center;
+                    border-bottom: $border;
+                    font-size: 32rpx;
+                    padding: 20rpx $space 20rpx 0rpx;
+                    margin-left: 2 * $amountFontSize + $amountMarginRight;
+
+                    .info {
+                        display: flex;
+                        flex-direction: column;
+
+                        .time {
+                            color: $lightColor;
+                            font-size: 28rpx;
+                        }
+                    }
+                }
+
+                .single-item.outgo .value {
+                    // 支出
+                    color: $outgoColor;
+                }
+
+                .single-item.income .value {
+                    // 收入
+                    color: $incomeColor;
+                }
+            }
+        }
+    }
 }
 
 .btn-account {
-    width: 100%;
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    left: 0;
 }
 </style>

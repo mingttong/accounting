@@ -1,0 +1,157 @@
+<template>
+    <view class="container">
+        <form bindsubmit="save">
+            <view class="tab">
+                <view class="item {{ tabId == 0 ? 'active' : ''}}" @tap="tabSelect(0)">支出</view>
+                <view class="item {{ tabId == 1 ? 'active' : ''}}" @tap="tabSelect(1)">收入</view>
+            </view>
+
+            <view class="detail">
+                <view class="item">
+                    <view class="name">金额</view>
+                    <input name="money" type="digit" maxlength="15" placeholder="请输入" />
+                </view>
+                <view class="item">
+                    <view class="name">类别</view>
+                    <input name="type" type="text" placeholder="请输入" />
+                </view>
+                <view class="item last">
+                    <view class="name">时间</view>
+                    <!-- <input name="time" type="text" placeholder="请输入" /> -->
+                    <picker class="date" mode="date" value="{{ date }}" @change="pickHandle('date')">
+                        {{ date }}
+                    </picker>
+                    <picker mode="time" value="{{ time }}" @change="pickHandle('time')">
+                        {{ time }}
+                    </picker>
+                </view>
+            </view>
+
+            <view class="note">
+                <input type="text" placeholder="备注" />
+            </view>
+
+            <button class="btn-save" type="primary" form-type="submit">保存</button>
+        </form>
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+import { getCurrentTime, getCurrentDate } from './utils';
+
+export default class Index extends wepy.page {
+    data = {
+        tabId: 0,
+        time: getCurrentTime(),
+        date: getCurrentDate(),
+    };
+    config = {};
+    components = {};
+    onLoad() {}
+
+    save() {}
+
+    methods = {
+        tabSelect(id) {
+            this.tabId = id;
+        },
+        pickHandle(propName, e) {
+            const { value } = e.detail;
+            this[propName] = value;
+        },
+    };
+}
+</script>
+
+<style lang="scss">
+@import '../mixin.scss';
+
+$itemHeight: 100rpx;
+$topSpace: 80rpx; // 单元格之间的间距
+$twoSideSpace: 50rpx; // 两边间距
+
+.tab {
+    display: flex;
+    flex-direction: row;
+    background-color: #fff;
+    border-bottom: $border;
+    height: $itemHeight;
+
+    .item {
+        flex: auto;
+        text-align: center;
+        line-height: $itemHeight;
+    }
+
+    .active {
+        color: $selectColor;
+        position: relative;
+
+        &::after {
+            display: block;
+            content: '';
+            width: 120rpx;
+            height: 5rpx;
+            position: absolute;
+            bottom: 0;
+            left: calc(50% - 60rpx);
+            background-color: $selectColor;
+        }
+    }
+}
+
+.detail {
+    margin-top: $topSpace;
+    background-color: #fff;
+    border-top: $border;
+    border-bottom: $border;
+
+    .item {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        height: $itemHeight;
+        margin-left: $twoSideSpace;
+        padding-right: $twoSideSpace;
+        border-bottom: $border;
+
+        .name {
+            margin-right: 100rpx;
+            height: 100%;
+            line-height: $itemHeight;
+        }
+        input {
+            flex: 1;
+            height: 100%;
+        }
+        picker {
+            height: 100%;
+            line-height: $itemHeight;
+        }
+        picker.date {
+            margin-right: 30rpx;
+        }
+    }
+}
+
+.note {
+    height: $itemHeight;
+    background-color: #fff;
+    border-top: $border;
+    border-bottom: $border;
+    margin-top: $topSpace;
+    padding: 0 $twoSideSpace;
+
+    input {
+        height: 100%;
+    }
+}
+
+.btn-save {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+</style>

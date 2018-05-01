@@ -1,0 +1,145 @@
+<template>
+    <view class="container">
+        <view class="outgo" wx:if="{{ type === 'outgo' }}">
+            <scroll-view class="type-list" @tap="selectType" srcoll-y>
+                <view class="item {{ index == curTypeIndex ? 'active' : '' }}" wx:for="{{ typeList }}" wx:key="id" data-index="{{ index }}">{{ item.name }}</view>
+            </scroll-view>
+            <scroll-view class="subtype-list" scroll-y>
+                <view class="item" wx:for="{{ subtype }}" wx:key="id">{{ item.name }}</view>
+            </scroll-view>
+        </view>
+
+        <view class="income" wx:else>
+            <scroll-view class="type-list" scroll-y>
+                <view class="item" wx:for="{{ typeList }}" wx:key="id">{{ item.name }}</view>
+            </scroll-view>
+        </view>
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+import { category } from './data';
+
+export default class Index extends wepy.page {
+    data = {
+        incomeList: category.income,
+        outgoList: category.outgo,
+        curTypeIndex: 2, // 当前选中type的id
+        type: 'outgo',
+        typeObj: {},
+        typeList: [],
+        subtype: [],
+    };
+    config = {};
+    components = {};
+    onLoad(options) {
+        const { type = 'income' } = options;
+
+        if (type === 'outgo') {
+            this.typeList = this.outgoList;
+        } else {
+            this.typeList = this.incomeList;
+        }
+
+        this.type = type;
+        this.typeObj = this.typeList[this.curTypeIndex];
+    }
+
+    watch = {
+        typeObj(v) {
+            this.subtype = v.subtype || [];
+        },
+    };
+
+    methods = {
+        selectType(e) {
+            const { index } = e.target.dataset;
+            this.curTypeIndex = index;
+            this.typeObj = this.typeList[index];
+        },
+    };
+}
+</script>
+
+<style lang="scss">
+@import '../mixin.scss';
+
+$itemHeight: 100rpx;
+
+// 高度占满
+.container {
+    height: 100%;
+
+    .outgo {
+        height: 100%;
+
+        .type-list {
+            height: 100%;
+        }
+        .subtype-list {
+            height: 100%;
+        }
+    }
+}
+
+.outgo {
+
+    display: flex;
+
+    .type-list {
+        width: 180rpx;
+        display: flex;
+        flex-direction: column;
+
+        .item {
+            height: $itemHeight;
+            line-height: $itemHeight;
+            text-align: center;
+
+            &.active {
+                background-color: #fff;
+                position: relative;
+
+                &::after {
+                    display: block;
+                    content: '';
+                    position: absolute;
+                    width: 8rpx;
+                    height: $itemHeight;
+                    top: 0;
+                    left: 0;
+                    background-color: $selectColor;
+                }
+            }
+        }
+    }
+
+    .subtype-list {
+        flex: 1;
+        background-color: #fff;
+        padding-left: 30rpx;
+        display: flex;
+        flex-direction: column;
+
+        .item {
+            border-bottom: $border;
+            height: $itemHeight;
+            line-height: $itemHeight;
+        }
+    }
+}
+
+.income {
+
+    .type-list {
+        padding-left: 30rpx;
+
+        .item {
+            height: $itemHeight;
+            line-height: $itemHeight;
+            border-bottom: $border;
+        }
+    }
+}
+</style>
