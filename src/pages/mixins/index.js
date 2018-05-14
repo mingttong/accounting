@@ -1,22 +1,27 @@
 // mixins/index.js
 import wepy from 'wepy';
+import global from '../../globalService';
 
 export default class mixin extends wepy.mixin {
-    getUserInfo() {
-        return new Promise((resolve, reject) => {
-            wx.getUserInfo({
-                timeout: 60000,
-                success({ userInfo }) {
-                    resolve(userInfo);
-                },
-                fail(res) {
-                    reject(res);
-                },
-            });
-        });
-    }
 
     handleError(msg) {
+        console.log('ERROR: -----------');
         console.log(msg);
+    }
+
+    handleUserInfo({ detail, callback }) {
+        const { errMsg, userInfo } = detail;
+
+        if (userInfo) {
+            this.isLogin = true; // 更新
+
+            global.set('userInfo', userInfo);
+            global.set('isLogin', true);
+
+            callback && callback(userInfo);
+
+        } else {
+            console.log(errMsg);
+        }
     }
 }

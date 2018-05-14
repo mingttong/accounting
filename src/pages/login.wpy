@@ -1,0 +1,27 @@
+<template>
+    <view class="container">
+
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+import mixin from './mixins';
+import global from '../globalService';
+
+export default class Index extends wepy.page {
+    config = {
+        backgroundColor: '#eee',
+    };
+    mixins = [mixin];
+    methods = {
+        
+    };
+}
+</script>
+
+<style lang="scss">
+.container {
+    padding: 200rpx 0;
+}
+</style>

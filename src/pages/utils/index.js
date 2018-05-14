@@ -1,3 +1,5 @@
+import wechatApi from './wechatApi';
+
 const getHours = () => new Date().getHours();
 const getMinutes = () => new Date().getMinutes();
 const getYear = () => new Date().getFullYear();
@@ -16,4 +18,12 @@ module.exports = {
     getCurrentDate() {
         return [getYear(), getMonth(), getDate()].map(formatNumber).join('-');
     },
+    getStorage(key) {
+        return wx.getStorageSync(key);
+    },
+    setStorage(key, value) {
+        return wx.setStorageSync(key, value);
+    },
+
+    wechat: wechatApi,
 };

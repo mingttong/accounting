@@ -1,24 +1,25 @@
 <template>
     <view class="container">
-        <form bindsubmit="save">
+        <form @submit="save">
             <view class="tab">
-                <view class="item {{ tabId == 0 ? 'active' : ''}}" @tap="tabSelect(0)">支出</view>
-                <view class="item {{ tabId == 1 ? 'active' : ''}}" @tap="tabSelect(1)">收入</view>
+                <view class="item {{ tabId === 0 ? 'active' : ''}}" @tap="switchTab(0)">支出</view>
+                <view class="item {{ tabId === 1 ? 'active' : ''}}" @tap="switchTab(1)">收入</view>
             </view>
 
             <view class="detail">
                 <view class="item">
                     <view class="name">金额</view>
-                    <input name="money" type="digit" maxlength="15" placeholder="请输入" />
+                    <input class="input-item" placeholder-class="input-holder" name="money" type="digit" maxlength="15" placeholder="请输入" />
                 </view>
                 <view class="item">
                     <view class="name">类别</view>
-                    <input name="type" type="text" placeholder="请输入" />
+                    <view class="input-item {{ category ? '' : 'input-holder' }}" @tap="selectCategory({{ tabId }})">{{ category || '请选择' }}</view>
+                    <input class="input-hide" name="category" type="text" value="{{ category }}" placeholder="" />
                 </view>
                 <view class="item last">
                     <view class="name">时间</view>
-                    <!-- <input name="time" type="text" placeholder="请输入" /> -->
-                    <picker class="date" mode="date" value="{{ date }}" @change="pickHandle('date')">
+                    <input class="input-hide" name="time" type="text" value="{{ date }}" placeholder="" />
+                    <picker class="date" mode="date" value="{{ date }} {{ time }}" @change="pickHandle('date')">
                         {{ date }}
                     </picker>
                     <picker mode="time" value="{{ time }}" @change="pickHandle('time')">
@@ -27,8 +28,8 @@
                 </view>
             </view>
 
-            <view class="note">
-                <input type="text" placeholder="备注" />
+            <view class="comment">
+                <input name="comment" type="text" placeholder="备注" />
             </view>
 
             <button class="btn-save" type="primary" form-type="submit">保存</button>
@@ -38,27 +39,50 @@
 
 <script>
 import wepy from 'wepy';
-import { getCurrentTime, getCurrentDate } from './utils';
+import {
+    getCurrentTime,
+    getCurrentDate,
+} from './utils';
+import store from '../globalService';
 
 export default class Index extends wepy.page {
     data = {
         tabId: 0,
         time: getCurrentTime(),
         date: getCurrentDate(),
+        category: '', // 类别
     };
     config = {};
     components = {};
     onLoad() {}
 
-    save() {}
+    onShow() {
+        const category = store.get('category');
+        this.category = category.name;
+    }
+
+    save(e) {
+        const { value } = e.detail;
+        console.log(value);
+        wx.navigateBack();
+    }
 
     methods = {
-        tabSelect(id) {
-            this.tabId = id;
+        switchTab(id) {
+            this.category = '';
+            this.tabId = +id;
+
+            store.setCategory(null);
         },
         pickHandle(propName, e) {
             const { value } = e.detail;
             this[propName] = value;
+        },
+        selectCategory(tabId) {
+            const url = `/pages/category?type=${tabId === 0 ? 'outgo' : 'income'}`;
+            wx.navigateTo({
+                url,
+            });
         },
     };
 }
@@ -121,9 +145,10 @@ $twoSideSpace: 50rpx; // 两边间距
             height: 100%;
             line-height: $itemHeight;
         }
-        input {
+        .input-item {
             flex: 1;
             height: 100%;
+            line-height: $itemHeight;
         }
         picker {
             height: 100%;
@@ -135,7 +160,7 @@ $twoSideSpace: 50rpx; // 两边间距
     }
 }
 
-.note {
+.comment {
     height: $itemHeight;
     background-color: #fff;
     border-top: $border;
@@ -153,5 +178,12 @@ $twoSideSpace: 50rpx; // 两边间距
     bottom: 0;
     left: 0;
     right: 0;
+}
+
+.input-holder {
+    color: $holderColor !important;
+}
+.input-hide {
+    display: none;
 }
 </style>

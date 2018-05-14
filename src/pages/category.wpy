@@ -5,13 +5,13 @@
                 <view class="item {{ index == curTypeIndex ? 'active' : '' }}" wx:for="{{ typeList }}" wx:key="id" data-index="{{ index }}">{{ item.name }}</view>
             </scroll-view>
             <scroll-view class="subtype-list" scroll-y>
-                <view class="item" wx:for="{{ subtype }}" wx:key="id">{{ item.name }}</view>
+                <view class="item" wx:for="{{ subtype }}" wx:key="id" @tap="selectItem({{ item.id }})">{{ item.name }}</view>
             </scroll-view>
         </view>
 
         <view class="income" wx:else>
             <scroll-view class="type-list" scroll-y>
-                <view class="item" wx:for="{{ typeList }}" wx:key="id">{{ item.name }}</view>
+                <view class="item" wx:for="{{ typeList }}" wx:key="id" @tap="selectItem({{ item.id }})">{{ item.name }}</view>
             </scroll-view>
         </view>
     </view>
@@ -19,14 +19,15 @@
 
 <script>
 import wepy from 'wepy';
-import { category } from './data';
+import { getCategoryList } from './utils/data';
+import store from '../globalService';
 
 export default class Index extends wepy.page {
     data = {
-        incomeList: category.income,
-        outgoList: category.outgo,
-        curTypeIndex: 2, // 当前选中type的id
-        type: 'outgo',
+        incomeList: [],
+        outgoList: [],
+        curTypeIndex: 0, // 当前选中type的id
+        type: '',
         typeObj: {},
         typeList: [],
         subtype: [],
@@ -34,8 +35,14 @@ export default class Index extends wepy.page {
     config = {};
     components = {};
     onLoad(options) {
-        const { type = 'income' } = options;
+        const { type = 'outgo' } = options;
 
+        // 获取种类列表
+        const categoryList = getCategoryList();
+        this.incomeList = categoryList.income;
+        this.outgoList = categoryList.outgo;
+
+        // 根据type，选择当前使用的列表
         if (type === 'outgo') {
             this.typeList = this.outgoList;
         } else {
@@ -53,10 +60,29 @@ export default class Index extends wepy.page {
     };
 
     methods = {
+        /**
+         * 选择大类
+         */
         selectType(e) {
             const { index } = e.target.dataset;
             this.curTypeIndex = index;
             this.typeObj = this.typeList[index];
+        },
+        /**
+         * 选择子类
+         */
+        selectItem(id) {
+            let toFilterList = []; // 要被筛选的列表
+
+            if (this.type === 'outgo') {
+                toFilterList = this.subtype;
+            } else {
+                toFilterList = this.typeList;
+            }
+
+            const item = toFilterList.find((v) => +v.id === +id) || {};
+            store.setCategory(item);
+            wx.navigateBack();
         },
     };
 }

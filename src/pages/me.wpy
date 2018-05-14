@@ -1,11 +1,11 @@
 <template>
     <view class="container">
         <view class="userinfo">
-            <image
-            class="userinfo-avatar"
-            background-size="cover"
-            src="{{ avatar }}"></image>
-            <text class="userinfo-nickname">{{ nickName }}</text>
+            <block wx:if="{{ showUserInfo && !isLoading }}">
+                <image class="userinfo-avatar" background-size="cover" src="{{ avatar }}"></image>
+                <text class="userinfo-nickname">{{ nickName }}</text>
+            </block>
+            <button open-type="getUserInfo" @getuserinfo="onGetUserInfo" wx:else>点击查看更多信息</button>
         </view>
     </view>
 </template>
@@ -13,54 +13,84 @@
 <script>
 import wepy from 'wepy';
 import mixin from './mixins';
+import { wechat } from './utils/index';
 
 export default class Index extends wepy.page {
     config = {
         backgroundColor: '#eee',
-    }
-    mixins = [mixin]
+    };
+    mixins = [mixin];
     data = {
         avatar: '',
         nickName: '',
-    }
+        showUserInfo: false,
+        isLoading: true,
+    };
     async onLoad() {
         console.log('onLoad');
 
-        try {
-            const {
-                avatarUrl,
-                nickName,
-                // gender,
-                // city,
-                // province,
-                // country,
-            } = await this.getUserInfo();
+        const { userInfo: userInfoAuth } = await wechat.getSetting();
 
-            this.avatar = avatarUrl;
-            this.nickName = nickName;
-            this.$apply();
-        } catch (e) {
-            this.handleError(e);
+        if (userInfoAuth) {
+            this.showUserInfo = true;
+            const userInfo = await wechat.getUserInfo();
+            this.updateUserInfo(userInfo);
         }
+
+        this.isLoading = false;
+        this.$apply();
     }
+
+    updateUserInfo(userInfo) {
+        const {
+            avatarUrl,
+            nickName,
+            // gender,
+            // city,
+            // province,
+            // country,
+        } = userInfo;
+
+        this.avatar = avatarUrl;
+        this.nickName = nickName;
+
+        this.$apply();
+    }
+
+    methods = {
+        onGetUserInfo({ detail }) {
+            const { userInfo, errMsg } = detail;
+
+            if (!userInfo) {
+                console.log(errMsg);
+                return;
+            }
+
+            this.showUserInfo = true;
+            this.updateUserInfo(userInfo);
+        },
+    };
 }
 </script>
 
 <style lang="scss">
 .container {
-    display: flex;
+    padding: 200rpx 0;
 
     .userinfo {
         display: flex;
         flex-direction: column;
         align-items: center;
-        margin-top: 40rpx;
 
         .userinfo-avatar {
             width: 128rpx;
             height: 128rpx;
             margin: 20rpx;
             border-radius: 50%;
+        }
+
+        .userinfo-nickname {
+            color: #aaa;
         }
     }
 }

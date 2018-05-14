@@ -1,9 +1,11 @@
+const baseURL = 'https://fuchyou.com';
+
 const ajax = (url, method, data, cfg = {}) => {
     const { header, dataType = 'json', timeout = 60000 } = cfg;
 
     return new Promise((resolve, reject) => {
         const reqTask = wx.request({
-            url,
+            url: baseURL + url,
             data,
             dataType,
             header,

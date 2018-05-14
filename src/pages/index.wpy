@@ -1,111 +1,127 @@
 <template>
     <view class="container">
-        <view class="header-container">
-            <view class="box">
-                <view class="value">￥{{ totalIncome }}</view>
-                <view class="title">总收入</view>
-            </view>
-            <view class="box">
-                <view class="value">￥{{ totaloutgo }}</view>
-                <view class="title">总支出</view>
-            </view>
-        </view>
-
-        <view class="account">
-            <!-- 月 -->
-            <view class="month-item">
-                <view class="month-amount">
-                    <view class="date">
-                        <text class="first bold">12月</text>
-                        <text>2018</text>
-                    </view>
-                    <view class="money">
-                        <text class="first">收:￥2000.00</text>
-                        <text>支:￥1008.00</text>
-                    </view>
+        <block wx:if="{{ !isLoading }}">
+            <view class="header-container">
+                <view class="box">
+                    <view class="value">￥{{ totalIncome }}</view>
+                    <view class="title">总收入</view>
                 </view>
-
-                <!-- 天 -->
-                <view class="day-list">
-                    <view class="day-item">
-                        <view class="day-amount">
-                            <view class="date">
-                                <text class="first">08</text>
-                                <text>周四</text>
-                            </view>
-                            <view class="money">
-                                <text class="first">收:￥200.00</text>
-                                <text>支:￥300.00</text>
-                            </view>
-                        </view>
-
-                        <!-- 单条项目 -->
-                        <view class="single-list">
-                            <view class="single-item income">
-                                <view class="info">
-                                    <text class="">工资薪水</text>
-                                    <text class="time">20:13</text>
-                                </view>
-                                <view class="value">￥200.00</view>
-                            </view>
-
-                            <view class="single-item outgo last">
-                                <view class="info">
-                                    <text class="">早饭</text>
-                                    <text class="time">20:13</text>
-                                </view>
-                                <view class="value">￥200.00</view>
-                            </view>
-                        </view>
-
-                    </view>
-
-                    <view class="day-item last">
-                        <view class="day-amount">
-                            <view class="date">
-                                <text class="first">08</text>
-                                <text>周四</text>
-                            </view>
-                            <view class="money">
-                                <text class="first">收:￥200.00</text>
-                                <text>支:￥300.00</text>
-                            </view>
-                        </view>
-
-                        <!-- 单条项目 -->
-                        <view class="single-list">
-                            <view class="single-item last">
-                                <view class="info">
-                                    <text class="">工资薪水</text>
-                                    <text class="time">20:13</text>
-                                </view>
-                                <view class="value">￥200.00</view>
-                            </view>
-                        </view>
-
-                    </view>
+                <view class="box">
+                    <view class="value">￥{{ totaloutgo }}</view>
+                    <view class="title">总支出</view>
                 </view>
-
             </view>
-        </view>
 
-        <button type="primary" class="btn-account">记一笔</button>
+            <view class="account">
+                <!-- 月 -->
+                <view class="month-item">
+                    <view class="month-amount">
+                        <view class="date">
+                            <text class="first bold">12月</text>
+                            <text>2018</text>
+                        </view>
+                        <view class="money">
+                            <text class="first">收:￥2000.00</text>
+                            <text>支:￥1008.00</text>
+                        </view>
+                    </view>
+
+                    <!-- 天 -->
+                    <view class="day-list">
+                        <view class="day-item">
+                            <view class="day-amount">
+                                <view class="date">
+                                    <text class="first">08</text>
+                                    <text>周四</text>
+                                </view>
+                                <view class="money">
+                                    <text class="first">收:￥200.00</text>
+                                    <text>支:￥300.00</text>
+                                </view>
+                            </view>
+
+                            <!-- 单条项目 -->
+                            <view class="single-list">
+                                <view class="single-item income">
+                                    <view class="info">
+                                        <text class="">工资薪水</text>
+                                        <text class="time">20:13</text>
+                                    </view>
+                                    <view class="value">￥200.00</view>
+                                </view>
+
+                                <view class="single-item outgo last">
+                                    <view class="info">
+                                        <text class="">早饭</text>
+                                        <text class="time">20:13</text>
+                                    </view>
+                                    <view class="value">￥200.00</view>
+                                </view>
+                            </view>
+
+                        </view>
+
+                        <view class="day-item last">
+                            <view class="day-amount">
+                                <view class="date">
+                                    <text class="first">08</text>
+                                    <text>周四</text>
+                                </view>
+                                <view class="money">
+                                    <text class="first">收:￥200.00</text>
+                                    <text>支:￥300.00</text>
+                                </view>
+                            </view>
+
+                            <!-- 单条项目 -->
+                            <view class="single-list">
+                                <view class="single-item last">
+                                    <view class="info">
+                                        <text class="">工资薪水</text>
+                                        <text class="time">20:13</text>
+                                    </view>
+                                    <view class="value">￥200.00</view>
+                                </view>
+                            </view>
+
+                        </view>
+                    </view>
+
+                </view>
+            </view>
+
+            <button type="primary" class="btn-account" @tap="addAccount">记一笔</button>
+        </block>
     </view>
 </template>
 
 <script>
 import wepy from 'wepy';
+import mixin from './mixins';
+import global from '../globalService';
 
 export default class Index extends wepy.page {
     data = {
         totalIncome: '20.00万',
         totaloutgo: '10000.00',
+        isLoading: true,
     };
     config = {
         backgroundColor: '#EEEEEE',
     };
     components = {};
-    onLoad() {}
+    mixins = [mixin];
+    onLoad() {
+        this.isLoading = false;
+    }
+
+    methods = {
+        addAccount() {
+            wx.navigateTo({
+                url: '/pages/edit',
+            });
+        },
+    };
 }
 </script>
 
@@ -230,6 +246,10 @@ $amountMarginRight: 15rpx; // amount里，文字的间距
             }
         }
     }
+}
+
+.login-button {
+    margin-top: 200rpx;
 }
 
 .btn-account {

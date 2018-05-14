@@ -22,6 +22,9 @@ module.exports = {
     },
     'html/html-extensions': ['.html', '.wpy']
   },
+  globals: {
+    "wx": true
+  },
   'rules': {
     'linebreak-style': 0,
     'indent': [2, 4],
