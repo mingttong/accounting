@@ -9,7 +9,7 @@
             <view class="detail">
                 <view class="item">
                     <view class="name">金额</view>
-                    <input class="input-item" placeholder-class="input-holder" name="money" type="digit" maxlength="15" placeholder="请输入" />
+                    <input class="input-item" placeholder-class="input-holder" name="money" type="digit" maxlength="15" value="{{ money || '' }}" @blur="inputHandle('money')" placeholder="请输入" />
                 </view>
                 <view class="item">
                     <view class="name">类别</view>
@@ -18,8 +18,8 @@
                 </view>
                 <view class="item last">
                     <view class="name">时间</view>
-                    <input class="input-hide" name="time" type="text" value="{{ date }}" placeholder="" />
-                    <picker class="date" mode="date" value="{{ date }} {{ time }}" @change="pickHandle('date')">
+                    <input class="input-hide" name="time" type="text" value="{{ date }} {{ time }}" placeholder="" />
+                    <picker class="date" mode="date" value="{{ date }}" @change="pickHandle('date')">
                         {{ date }}
                     </picker>
                     <picker mode="time" value="{{ time }}" @change="pickHandle('time')">
@@ -29,7 +29,7 @@
             </view>
 
             <view class="comment">
-                <input name="comment" type="text" placeholder="备注" />
+                <input name="comment" type="text" value="{{ comment }}" @blur="inputHandle('comment')" placeholder="备注" />
             </view>
 
             <button class="btn-save" type="primary" form-type="submit">保存</button>
@@ -43,46 +43,117 @@ import {
     getCurrentTime,
     getCurrentDate,
 } from './utils';
-import store from '../globalService';
+import global from '../globalService';
+import { get, post } from '../http';
+import mixin from './mixins';
+
+const typeList = ['outgo', 'income'];
 
 export default class Index extends wepy.page {
     data = {
+        id: '',
         tabId: 0,
         time: getCurrentTime(),
         date: getCurrentDate(),
-        category: '', // 类别
+        category: null, // 类别
+        categoryId: null, // 类别id
+        money: 0,
+        comment: '',
     };
     config = {};
     components = {};
-    onLoad() {}
+    mixins = [mixin];
+    async onLoad(options) {
+        const { id } = options;
+        if (id) {
+            this.id = id;
+
+            const {
+                type,
+                money,
+                category,
+                category_id: cateogryId,
+                time: dataTime,
+                comment,
+            } = await get(`/bill?id=${id}`);
+
+            const [, date, time] = dataTime.match(/([0-9]{4}-[0-9]{2}-[0-9]{2}) ([0-9]{2}:[0-9]{2})/);
+
+            // TODO: 如何优化？只能Object.assign？
+            this.tabId = type === 'outgo' ? 0 : 1;
+            this.money = money;
+            this.category = category;
+            this.categoryId = cateogryId;
+            this.date = date;
+            this.time = time;
+            this.comment = comment;
+            this.$apply();
+        }
+    }
 
     onShow() {
-        const category = store.get('category');
-        this.category = category.name;
+        const category = global.get('category');
+
+        if (category) {
+            this.category = category.name;
+            this.categoryId = category.id;
+        }
     }
 
-    save(e) {
-        const { value } = e.detail;
-        console.log(value);
-        wx.navigateBack();
+    async save(e) {
+        try {
+            const { value: data } = e.detail;
+            const { categoryId, tabId, id } = this;
+
+            await post('/bill/save', Object.assign(data, {
+                id,
+                categoryId,
+                type: typeList[tabId],
+            }));
+
+            global.set('billUpdated', true);
+            global.set('category', '');
+
+            wx.navigateBack();
+        } catch (err) {
+            this.handleError(err);
+        }
     }
+
+    // TODO: 计算属性可以作为一个点来说
+    computed = {
+        money() {
+            const v = this.money;
+
+            if (+v) {
+                return (+v).toFixed(2);
+            }
+
+            return v;
+        },
+    };
 
     methods = {
         switchTab(id) {
             this.category = '';
             this.tabId = +id;
 
-            store.setCategory(null);
+            global.setCategory(null);
         },
         pickHandle(propName, e) {
             const { value } = e.detail;
             this[propName] = value;
         },
         selectCategory(tabId) {
-            const url = `/pages/category?type=${tabId === 0 ? 'outgo' : 'income'}`;
+            const url = `/pages/category?type=${typeList[tabId]}`;
             wx.navigateTo({
                 url,
             });
+        },
+        // TODO: 对输入框的事件作统一处理，看这个能不能说
+        inputHandle(propName, e) {
+            const { value } = e.detail;
+            this[propName] = value;
         },
     };
 }

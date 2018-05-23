@@ -1,7 +1,7 @@
 <template>
     <view class="container">
         <block wx:if="{{ !isLoading }}">
-            <view class="header-container">
+            <!-- <view class="header-container">
                 <view class="box">
                     <view class="value">￥{{ totalIncome }}</view>
                     <view class="title">总收入</view>
@@ -10,87 +10,56 @@
                     <view class="value">￥{{ totaloutgo }}</view>
                     <view class="title">总支出</view>
                 </view>
-            </view>
+            </view> -->
 
-            <view class="account">
+            <view class="bill">
                 <!-- 月 -->
-                <view class="month-item">
+                <view class="month-item {{ index + 1 === bills.length ? 'last' : '' }}" wx:for="{{ bills }}" wx:for-item="monthItem" wx:key="value">
                     <view class="month-amount">
                         <view class="date">
-                            <text class="first bold">12月</text>
-                            <text>2018</text>
+                            <text class="first bold">{{ monthItem.month }}月</text>
+                            <text>{{ monthItem.year }}</text>
                         </view>
-                        <view class="money">
+                        <!-- <view class="money">
                             <text class="first">收:￥2000.00</text>
                             <text>支:￥1008.00</text>
-                        </view>
+                        </view> -->
                     </view>
 
                     <!-- 天 -->
                     <view class="day-list">
-                        <view class="day-item">
+                        <view class="day-item" wx:for="{{ monthItem.items }}" wx:for-item="dayItem" wx:key="value">
                             <view class="day-amount">
                                 <view class="date">
-                                    <text class="first">08</text>
-                                    <text>周四</text>
+                                    <text class="first">{{ dayItem.day }}</text>
+                                    <text>{{ weekDict[dayItem.week] }}</text>
                                 </view>
-                                <view class="money">
+                                <!-- <view class="money">
                                     <text class="first">收:￥200.00</text>
                                     <text>支:￥300.00</text>
-                                </view>
+                                </view> -->
                             </view>
 
                             <!-- 单条项目 -->
                             <view class="single-list">
-                                <view class="single-item income">
+                                <navigator class="single-item {{ item.type }} {{ index + 1 === dayItem.items.length ? 'last' : '' }}" url="/pages/edit?id={{item.id}}" wx:for="{{ dayItem.items }}" wx:key="id">
                                     <view class="info">
-                                        <text class="">工资薪水</text>
-                                        <text class="time">20:13</text>
-                                    </view>
-                                    <view class="value">￥200.00</view>
-                                </view>
-
-                                <view class="single-item outgo last">
-                                    <view class="info">
-                                        <text class="">早饭</text>
-                                        <text class="time">20:13</text>
-                                    </view>
-                                    <view class="value">￥200.00</view>
-                                </view>
+                                            <text class="">{{ item.category }}</text>
+                                            <text class="time">{{ item.formatTime }}</text>
+                                        </view>
+                                        <view class="value">￥{{ item.money }}</view>
+                                </navigator>
                             </view>
 
                         </view>
-
-                        <view class="day-item last">
-                            <view class="day-amount">
-                                <view class="date">
-                                    <text class="first">08</text>
-                                    <text>周四</text>
-                                </view>
-                                <view class="money">
-                                    <text class="first">收:￥200.00</text>
-                                    <text>支:￥300.00</text>
-                                </view>
-                            </view>
-
-                            <!-- 单条项目 -->
-                            <view class="single-list">
-                                <view class="single-item last">
-                                    <view class="info">
-                                        <text class="">工资薪水</text>
-                                        <text class="time">20:13</text>
-                                    </view>
-                                    <view class="value">￥200.00</view>
-                                </view>
-                            </view>
-
-                        </view>
+                        <!-- day-end -->
                     </view>
 
                 </view>
+                <!-- month-end -->
             </view>
 
-            <button type="primary" class="btn-account" @tap="addAccount">记一笔</button>
+            <button type="primary" class="btn-bill" @tap="addbill">记一笔</button>
         </block>
     </view>
 </template>
@@ -98,25 +67,47 @@
 <script>
 import wepy from 'wepy';
 import mixin from './mixins';
+import { get } from '../http';
 import global from '../globalService';
+
+// TODO: bug 后增加一个与上一条时间相同的数据，会出现该数据排在前面的情况？？？
 
 export default class Index extends wepy.page {
     data = {
         totalIncome: '20.00万',
         totaloutgo: '10000.00',
         isLoading: true,
+        bills: [],
+        weekDict: ['周日', '周一', '周二', '周三', '周四', '周五', '周六'],
     };
     config = {
         backgroundColor: '#EEEEEE',
     };
     components = {};
     mixins = [mixin];
-    onLoad() {
+    async onLoad() {
+        await this.loadData();
+    }
+
+    async loadData() {
+        const bills = await get('/bill');
+        this.bills = bills;
         this.isLoading = false;
+        this.$apply();
+    }
+
+    async onShow() {
+        // TODO: 前端自己做刷新
+        // 更新了账单数据，需要重新加载数据
+        if (global.get('billUpdated')) {
+            this.isLoading = true;
+            this.$apply();
+            await this.loadData();
+        }
     }
 
     methods = {
-        addAccount() {
+        async addbill() {
             wx.navigateTo({
                 url: '/pages/edit',
             });
@@ -172,8 +163,13 @@ $amountMarginRight: 15rpx; // amount里，文字的间距
     }
 }
 
-.account {
+.bill {
     margin-top: 50rpx;
+    margin-bottom: 100rpx;
+
+    .month-item {
+        margin-top: 20rpx;
+    }
 
     text.bold {
         color: #666666;
@@ -181,7 +177,7 @@ $amountMarginRight: 15rpx; // amount里，文字的间距
 
     .date .first {
         display: inline-block;
-        width: 2 * $amountFontSize + 5rpx;
+        width: 2 * $amountFontSize + 10rpx;
         text-align: right;
         margin-right: $amountMarginRight;
     }
@@ -252,7 +248,7 @@ $amountMarginRight: 15rpx; // amount里，文字的间距
     margin-top: 200rpx;
 }
 
-.btn-account {
+.btn-bill {
     position: fixed;
     bottom: 0;
     right: 0;

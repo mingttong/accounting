@@ -7,16 +7,13 @@
 <script>
 import wepy from 'wepy';
 import mixin from './mixins';
-import global from '../globalService';
 
 export default class Index extends wepy.page {
     config = {
         backgroundColor: '#eee',
     };
     mixins = [mixin];
-    methods = {
-        
-    };
+    methods = {};
 }
 </script>
 

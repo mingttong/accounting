@@ -1,8 +1,13 @@
+// TODO: 全局变量在此管理，看能不能说
+// 分为不存storage（状态）和存在storage（数据），缓存是否做超时设置
+
 const data = {
-    category: '',
+    category: '', // 当前所选种类
+    billUpdated: false,
 };
 
-const storageNameList = ['isLogin', 'userInfo'];
+// 存在storage里的全局变量
+const storageNameList = ['isLogin', 'userInfo', 'incomeList', 'outgoList'];
 
 module.exports = {
     setCategory(v) {

@@ -20,7 +20,8 @@
 <script>
 import wepy from 'wepy';
 import { getCategoryList } from './utils/data';
-import store from '../globalService';
+import global from '../globalService';
+import mixin from './mixins';
 
 export default class Index extends wepy.page {
     data = {
@@ -34,25 +35,21 @@ export default class Index extends wepy.page {
     };
     config = {};
     components = {};
-    onLoad(options) {
+    mixins = [mixin];
+    async onLoad(options) {
         const { type = 'outgo' } = options;
 
-        // 获取种类列表
-        const categoryList = getCategoryList();
-        this.incomeList = categoryList.income;
-        this.outgoList = categoryList.outgo;
-
-        // 根据type，选择当前使用的列表
-        if (type === 'outgo') {
-            this.typeList = this.outgoList;
-        } else {
-            this.typeList = this.incomeList;
+        try {
+            this.typeList = await getCategoryList(type);
+            this.type = type;
+            this.typeObj = this.typeList[this.curTypeIndex];
+            this.$apply();
+        } catch (e) {
+            this.handleError(e);
         }
-
-        this.type = type;
-        this.typeObj = this.typeList[this.curTypeIndex];
     }
 
+    // TODO: watch可以作为一个点来说
     watch = {
         typeObj(v) {
             this.subtype = v.subtype || [];
@@ -81,7 +78,7 @@ export default class Index extends wepy.page {
             }
 
             const item = toFilterList.find((v) => +v.id === +id) || {};
-            store.setCategory(item);
+            global.setCategory(item);
             wx.navigateBack();
         },
     };
@@ -110,7 +107,6 @@ $itemHeight: 100rpx;
 }
 
 .outgo {
-
     display: flex;
 
     .type-list {
@@ -157,7 +153,6 @@ $itemHeight: 100rpx;
 }
 
 .income {
-
     .type-list {
         padding-left: 30rpx;
 
