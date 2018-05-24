@@ -1,66 +1,67 @@
 <template>
     <view class="container">
-        <block wx:if="{{ !isLoading }}">
-            <!-- <view class="header-container">
-                <view class="box">
-                    <view class="value">￥{{ totalIncome }}</view>
-                    <view class="title">总收入</view>
-                </view>
-                <view class="box">
-                    <view class="value">￥{{ totaloutgo }}</view>
-                    <view class="title">总支出</view>
-                </view>
-            </view> -->
-
-            <view class="bill">
-                <!-- 月 -->
-                <view class="month-item {{ index + 1 === bills.length ? 'last' : '' }}" wx:for="{{ bills }}" wx:for-item="monthItem" wx:key="value">
-                    <view class="month-amount">
-                        <view class="date">
-                            <text class="first bold">{{ monthItem.month }}月</text>
-                            <text>{{ monthItem.year }}</text>
-                        </view>
-                        <!-- <view class="money">
-                            <text class="first">收:￥2000.00</text>
-                            <text>支:￥1008.00</text>
-                        </view> -->
-                    </view>
-
-                    <!-- 天 -->
-                    <view class="day-list">
-                        <view class="day-item" wx:for="{{ monthItem.items }}" wx:for-item="dayItem" wx:key="value">
-                            <view class="day-amount">
-                                <view class="date">
-                                    <text class="first">{{ dayItem.day }}</text>
-                                    <text>{{ weekDict[dayItem.week] }}</text>
-                                </view>
-                                <!-- <view class="money">
-                                    <text class="first">收:￥200.00</text>
-                                    <text>支:￥300.00</text>
-                                </view> -->
-                            </view>
-
-                            <!-- 单条项目 -->
-                            <view class="single-list">
-                                <navigator class="single-item {{ item.type }} {{ index + 1 === dayItem.items.length ? 'last' : '' }}" url="/pages/edit?id={{item.id}}" wx:for="{{ dayItem.items }}" wx:key="id">
-                                    <view class="info">
-                                            <text class="">{{ item.category }}</text>
-                                            <text class="time">{{ item.formatTime }}</text>
-                                        </view>
-                                        <view class="value">￥{{ item.money }}</view>
-                                </navigator>
-                            </view>
-
-                        </view>
-                        <!-- day-end -->
-                    </view>
-
-                </view>
-                <!-- month-end -->
+        <view class="header-container">
+            <view class="box">
+                <view class="value">￥{{ totalIncome }}</view>
+                <view class="title">总收入</view>
             </view>
+            <view class="box">
+                <view class="value">￥{{ totalOutgo }}</view>
+                <view class="title">总支出</view>
+            </view>
+        </view>
 
-            <button type="primary" class="btn-bill" @tap="addbill">记一笔</button>
-        </block>
+        <view class="bill" wx:if="{{ bills.length }}">
+            <!-- 月 -->
+            <view class="month-item {{ index + 1 === bills.length ? 'last' : '' }}" wx:for="{{ bills }}" wx:for-item="monthItem" wx:key="value">
+                <view class="month-amount">
+                    <view class="date">
+                        <text class="first bold">{{ monthItem.month }}月</text>
+                        <text>{{ monthItem.year }}</text>
+                    </view>
+                    <view class="money">
+                        <text class="first">收:￥{{ monthItem.totalIncome }}</text>
+                        <text>支:￥{{ monthItem.totalOutgo }}</text>
+                    </view>
+                </view>
+
+                <!-- 天 -->
+                <view class="day-list">
+                    <view class="day-item" wx:for="{{ monthItem.items }}" wx:for-item="dayItem" wx:key="value">
+                        <view class="day-amount">
+                            <view class="date">
+                                <text class="first">{{ dayItem.day }}</text>
+                                <text>{{ weekDict[dayItem.week] }}</text>
+                            </view>
+                            <view class="money">
+                                <text class="first">收:￥{{ dayItem.totalIncome }}</text>
+                                <text>支:￥{{ dayItem.totalOutgo }}</text>
+                            </view>
+                        </view>
+
+                        <!-- 单条项目 -->
+                        <view class="single-list">
+                            <navigator class="single-item {{ item.type }} {{ index + 1 === dayItem.items.length ? 'last' : '' }}" url="/pages/edit?id={{item.id}}" wx:for="{{ dayItem.items }}" wx:key="id">
+                                <view class="info">
+                                    <text class="">{{ item.category }}</text>
+                                    <text class="time">{{ item.formatTime }}</text>
+                                </view>
+                                <view class="value">￥{{ item.money }}</view>
+                            </navigator>
+                        </view>
+
+                    </view>
+                    <!-- day-end -->
+                </view>
+
+            </view>
+            <!-- month-end -->
+        </view>
+        <view class="box-empty" wx:elif="{{ !isLoading }}">
+            你还没有账单哦，赶快点击下方按钮记一笔吧
+        </view>
+
+        <button type="primary" class="btn-bill" @tap="addbill">记一笔</button>
     </view>
 </template>
 
@@ -74,10 +75,10 @@ import global from '../globalService';
 
 export default class Index extends wepy.page {
     data = {
-        totalIncome: '20.00万',
-        totaloutgo: '10000.00',
-        isLoading: true,
+        totalIncome: '0',
+        totalOutgo: '0',
         bills: [],
+        isLoading: true,
         weekDict: ['周日', '周一', '周二', '周三', '周四', '周五', '周六'],
     };
     config = {
@@ -90,18 +91,22 @@ export default class Index extends wepy.page {
     }
 
     async loadData() {
-        const bills = await get('/bill');
-        this.bills = bills;
-        this.isLoading = false;
-        this.$apply();
+        try {
+            const { bills, totalIncome, totalOutgo } = await get('/bill');
+            this.bills = bills;
+            this.totalIncome = totalIncome;
+            this.totalOutgo = totalOutgo;
+            this.isLoading = false;
+            this.$apply();
+        } catch (err) {
+            this.handleError(err);
+        }
     }
 
     async onShow() {
-        // TODO: 前端自己做刷新
         // 更新了账单数据，需要重新加载数据
         if (global.get('billUpdated')) {
-            this.isLoading = true;
-            this.$apply();
+            global.set('billUpdated', false);
             await this.loadData();
         }
     }
@@ -253,5 +258,12 @@ $amountMarginRight: 15rpx; // amount里，文字的间距
     bottom: 0;
     right: 0;
     left: 0;
+}
+
+.box-empty {
+    color: #999999;
+    padding-top: 300rpx;
+    text-align: center;
+    font-size: 30rpx;
 }
 </style>

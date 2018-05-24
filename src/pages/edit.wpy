@@ -32,7 +32,10 @@
                 <input name="comment" type="text" value="{{ comment }}" @blur="inputHandle('comment')" placeholder="备注" />
             </view>
 
-            <button class="btn-save" type="primary" form-type="submit">保存</button>
+            <view class="btn-list">
+                <button type="warn" @tap="delete">删除</button>
+                <button type="primary" form-type="submit" disabled="{{ !canSubmit }}">保存</button>
+            </view>
         </form>
     </view>
 </template>
@@ -42,6 +45,7 @@ import wepy from 'wepy';
 import {
     getCurrentTime,
     getCurrentDate,
+    wechat,
 } from './utils';
 import global from '../globalService';
 import { get, post } from '../http';
@@ -59,6 +63,7 @@ export default class Index extends wepy.page {
         categoryId: null, // 类别id
         money: 0,
         comment: '',
+        canSubmit: false, // 是否能提交
     };
     config = {};
     components = {};
@@ -111,10 +116,35 @@ export default class Index extends wepy.page {
                 type: typeList[tabId],
             }));
 
-            global.set('billUpdated', true);
-            global.set('category', '');
+            this.editComplete();
+        } catch (err) {
+            this.handleError(err);
+        }
+    }
 
-            wx.navigateBack();
+    editComplete() {
+        global.emit('completeSaveBill');
+        wx.navigateBack();
+    }
+
+    async delete() {
+        try {
+            const { confirm } = await wechat.showModal({
+                title: '注意',
+                content: '是否删除该条数据？',
+            });
+
+            if (!confirm) {
+                return;
+            }
+
+            const { id } = this;
+
+            await post('/bill/delete', {
+                id,
+            });
+
+            this.editComplete();
         } catch (err) {
             this.handleError(err);
         }
@@ -130,6 +160,10 @@ export default class Index extends wepy.page {
             }
 
             return v;
+        },
+
+        canSubmit() {
+            return !!(this.money && this.category && this.time);
         },
     };
 
@@ -244,11 +278,16 @@ $twoSideSpace: 50rpx; // 两边间距
     }
 }
 
-.btn-save {
+.btn-list {
+    display: flex;
     position: fixed;
     bottom: 0;
     left: 0;
     right: 0;
+
+    button {
+        flex: 1;
+    }
 }
 
 .input-holder {

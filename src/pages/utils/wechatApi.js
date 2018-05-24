@@ -37,4 +37,19 @@ module.exports = {
             });
         });
     },
+
+    showModal({ title, content}) {
+        return new Promise((resolve, reject) => {
+            wx.showModal({
+                title,
+                content,
+                success(e) {
+                    resolve(e);
+                },
+                fail(e) {
+                    reject(e);
+                },
+            });
+        });
+    },
 };

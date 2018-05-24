@@ -4,12 +4,21 @@
 const data = {
     category: '', // 当前所选种类
     billUpdated: false,
+    outgoList: [],
+    incomeList: [],
 };
 
 // 存在storage里的全局变量
-const storageNameList = ['isLogin', 'userInfo', 'incomeList', 'outgoList'];
+const storageNameList = ['isLogin', 'userInfo'];
 
-module.exports = {
+const emitStore = {
+    completeSaveBill() {
+        globalSerice.set('billUpdated', true);
+        globalSerice.set('category', '');
+    },
+};
+
+const globalSerice =  {
     setCategory(v) {
         if (({}).toString.call(v) !== '[object Object]') {
             data.category = { id: -1, name: '' };
@@ -27,6 +36,9 @@ module.exports = {
         }
 
         data[name] = v;
+
+        console.log(data);
+
         return v;
     },
 
@@ -40,4 +52,11 @@ module.exports = {
 
         return data[name];
     },
+
+    emit(eventName) {
+        const eventFunc = emitStore[eventName];
+        return eventFunc && eventFunc();
+    },
 };
+
+module.exports = globalSerice;
