@@ -41,13 +41,18 @@
 
                         <!-- 单条项目 -->
                         <view class="single-list">
-                            <navigator class="single-item {{ item.type }} {{ index + 1 === dayItem.items.length ? 'last' : '' }}" url="/pages/edit?id={{item.id}}" wx:for="{{ dayItem.items }}" wx:key="id">
-                                <view class="info">
-                                    <text class="">{{ item.category }}</text>
-                                    <text class="time">{{ item.formatTime }}</text>
-                                </view>
-                                <view class="value">￥{{ item.money }}</view>
-                            </navigator>
+                            <block wx:for="{{ dayItem.items }}" wx:key="id">
+                                <navigator class="single-item {{ item.type }} {{ index + 1 === dayItem.items.length ? 'last' : '' }}"
+                                            @longpress="activeMultiChoose"
+                                            url="/pages/edit?id={{item.id}}">
+                                    <view class="info">
+                                        <text class="">{{ item.category }}</text>
+                                        <text class="time">{{ item.formatTime }}</text>
+                                    </view>
+                                    <view class="value">￥{{ item.money }}</view>
+                                    <view class="mask {{ selectedIdsObj[item.id] ? 'selected' : '' }}" @tap.stop="selectItem({{ item.id }})" wx:if="{{ isEditing }}"></view>
+                                </navigator>
+                            </block>
                         </view>
 
                     </view>
@@ -61,17 +66,22 @@
             你还没有账单哦，赶快点击下方按钮记一笔吧
         </view>
 
-        <button type="primary" class="btn-bill" @tap="addbill">记一笔</button>
+        <view class="btn-list">
+            <block wx:if="{{ isEditing }}">
+                <button type="warn" @tap="deleteItems">删除</button>
+                <button type="default" @tap="cancelEdit">取消</button>
+            </block>
+            <button type="primary" @tap="addbill" wx:else>记一笔</button>
+        </view>
     </view>
 </template>
 
 <script>
 import wepy from 'wepy';
 import mixin from './mixins';
-import { get } from '../http';
+import { get, post } from '../http';
 import global from '../globalService';
-
-// TODO: bug 后增加一个与上一条时间相同的数据，会出现该数据排在前面的情况？？？
+import { wechat } from './utils';
 
 export default class Index extends wepy.page {
     data = {
@@ -80,6 +90,8 @@ export default class Index extends wepy.page {
         bills: [],
         isLoading: true,
         weekDict: ['周日', '周一', '周二', '周三', '周四', '周五', '周六'],
+        isEditing: false,
+        selectedIdsObj: {}, // 以对象的方式保存选中了哪些
     };
     config = {
         backgroundColor: '#EEEEEE',
@@ -116,6 +128,62 @@ export default class Index extends wepy.page {
             wx.navigateTo({
                 url: '/pages/edit',
             });
+        },
+
+        activeMultiChoose() {
+            this.isEditing = true;
+            this.selectedIdsObj = {};
+            this.$apply();
+        },
+
+        selectItem(id) {
+            if (this.selectedIdsObj[id]) {
+                delete this.selectedIdsObj[id];
+            } else {
+                this.selectedIdsObj[id] = true;
+            }
+        },
+
+        async deleteItems() {
+            try {
+                const ids = Object.keys(this.selectedIdsObj); // 不放到computed里，只有在真正需要时才转成数组
+
+                if (!ids.length) {
+                    await wechat.showModal({
+                        content: '请选择账单!',
+                    });
+                    return false;
+                }
+
+                const { confirm } = await wechat.showModal({
+                    content: '确认删除选中的账单?（无法撤回）',
+                });
+
+                if (!confirm) {
+                    return false;
+                }
+
+                const result = await post('/bill/deleteMany', {
+                    ids,
+                });
+
+                console.log(result);
+
+                this.selectedIdsObj = {};
+                this.isEditing = false;
+                this.$apply();
+
+                this.loadData();
+                return result;
+            } catch (err) {
+                this.handleError(err);
+                return false;
+            }
+        },
+
+        cancelEdit() {
+            this.isEditing = false;
+            this.$apply();
         },
     };
 }
@@ -223,6 +291,7 @@ $amountMarginRight: 15rpx; // amount里，文字的间距
                     font-size: 32rpx;
                     padding: 20rpx $space 20rpx 0rpx;
                     margin-left: 2 * $amountFontSize + $amountMarginRight;
+                    position: relative;
 
                     .info {
                         display: flex;
@@ -232,6 +301,19 @@ $amountMarginRight: 15rpx; // amount里，文字的间距
                             color: $lightColor;
                             font-size: 28rpx;
                         }
+                    }
+
+                    .mask {
+                        position: absolute;
+                        width: 100%;
+                        height: 100%;
+                        background-image: url('/unchecked.png');
+                        background-repeat: no-repeat;
+                        background-size: 30rpx;
+                        background-position:top 10rpx right 30rpx;
+                    }
+                    .mask.selected {
+                        background-image: url('/checked.png');
                     }
                 }
 
@@ -253,11 +335,16 @@ $amountMarginRight: 15rpx; // amount里，文字的间距
     margin-top: 200rpx;
 }
 
-.btn-bill {
+.btn-list {
+    display: flex;
     position: fixed;
     bottom: 0;
     right: 0;
     left: 0;
+
+    button {
+        flex: 1;
+    }
 }
 
 .box-empty {

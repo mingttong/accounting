@@ -38,7 +38,7 @@ module.exports = {
         });
     },
 
-    showModal({ title, content}) {
+    showModal({ title = '注意', content}) {
         return new Promise((resolve, reject) => {
             wx.showModal({
                 title,
