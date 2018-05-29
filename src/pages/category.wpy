@@ -7,7 +7,9 @@
                 </block>
             </scroll-view>
             <scroll-view class="subtype-list" scroll-y>
-                <view class="item" wx:for="{{ subtype }}" wx:key="id" @tap="selectItem({{ item.id }})">{{ item.name }}</view>
+                <block wx:for="{{ subtype }}" wx:key="id">
+                    <view class="item" @tap="selectItem({{ item.id }})">{{ item.name }}<view class="icon-star {{ item.star === true ? 'star' : '' }}" @tap="star({{ item.id }}, {{ item.star || false }})"></view></view>
+                </block>
             </scroll-view>
         </view>
     </view>
@@ -18,6 +20,7 @@ import wepy from 'wepy';
 import { getCategoryList } from './utils/data';
 import global from '../globalService';
 import mixin from './mixins';
+import { post } from '../http';
 
 export default class Index extends wepy.page {
     data = {
@@ -36,13 +39,17 @@ export default class Index extends wepy.page {
         const { type = 'outgo' } = options;
 
         try {
-            this.typeList = await getCategoryList(type);
-            this.type = type;
-            this.typeObj = this.typeList[this.curTypeIndex];
-            this.$apply();
+            await this.loadData(type);
         } catch (e) {
             this.handleError(e);
         }
+    }
+
+    async loadData(type) {
+        this.typeList = await getCategoryList(type);
+        this.type = type;
+        this.typeObj = this.typeList[this.curTypeIndex];
+        this.$apply();
     }
 
     // TODO: watch可以作为一个点来说
@@ -71,6 +78,22 @@ export default class Index extends wepy.page {
             const item = toFilterList.find((v) => +v.id === +id) || {};
             global.setCategory(item);
             wx.navigateBack();
+        },
+
+        async star(id, star) {
+            try {
+                const postData = { categoryId: id, type: this.type };
+
+                if (star) {
+                    await post('/collection/delete', postData);
+                } else {
+                    await post('/collection/add', postData);
+                }
+
+                this.loadData(this.type);
+            } catch (err) {
+                this.handleError(err);
+            }
         },
     };
 }
@@ -136,9 +159,25 @@ $itemHeight: 100rpx;
         flex-direction: column;
 
         .item {
+            position: relative;
             border-bottom: $border;
             height: $itemHeight;
             line-height: $itemHeight;
+
+            .icon-star {
+                position: absolute;
+                display: block;
+                content: '';
+                width: 48rpx;
+                height: 48rpx;
+                background-image: url('/unstar.png');
+                background-size: 100%;
+                top: 26rpx;
+                right: 26rpx;
+            }
+            .icon-star.star {
+                background-image: url('/star.png');
+            }
         }
     }
 }

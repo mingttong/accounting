@@ -16,9 +16,9 @@ module.exports = {
         const storageName = storageNameDict[type];
         const listCache = global.get(storageName);
 
-        if (listCache && listCache.length) {
-            return listCache;
-        }
+        // if (listCache && listCache.length) {
+        //     return listCache;
+        // }
 
         const list = await get(`/category/${type}`);
         global.set(storageName, list);
