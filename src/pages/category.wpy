@@ -1,17 +1,11 @@
 <template>
     <view class="container">
-        <view class="outgo" wx:if="{{ type === 'outgo' }}">
+        <view class="outgo">
             <scroll-view class="type-list" @tap="selectType" srcoll-y>
                 <view class="item {{ index == curTypeIndex ? 'active' : '' }}" wx:for="{{ typeList }}" wx:key="id" data-index="{{ index }}">{{ item.name }}</view>
             </scroll-view>
             <scroll-view class="subtype-list" scroll-y>
                 <view class="item" wx:for="{{ subtype }}" wx:key="id" @tap="selectItem({{ item.id }})">{{ item.name }}</view>
-            </scroll-view>
-        </view>
-
-        <view class="income" wx:else>
-            <scroll-view class="type-list" scroll-y>
-                <view class="item" wx:for="{{ typeList }}" wx:key="id" @tap="selectItem({{ item.id }})">{{ item.name }}</view>
             </scroll-view>
         </view>
     </view>
@@ -70,12 +64,7 @@ export default class Index extends wepy.page {
          */
         selectItem(id) {
             let toFilterList = []; // 要被筛选的列表
-
-            if (this.type === 'outgo') {
-                toFilterList = this.subtype;
-            } else {
-                toFilterList = this.typeList;
-            }
+            toFilterList = this.subtype; // 因为节点事件方法还不能传对象，所以目前只能先拿到id后再从列表中查找
 
             const item = toFilterList.find((v) => +v.id === +id) || {};
             global.setCategory(item);

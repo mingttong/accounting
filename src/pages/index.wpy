@@ -133,7 +133,8 @@ export default class Index extends wepy.page {
         activeMultiChoose() {
             this.isEditing = true;
             this.selectedIdsObj = {};
-            this.$apply();
+            console.log('active multi choose');
+            // this.$apply();
         },
 
         selectItem(id) {
