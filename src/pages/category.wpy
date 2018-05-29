@@ -2,7 +2,9 @@
     <view class="container">
         <view class="outgo">
             <scroll-view class="type-list" @tap="selectType" srcoll-y>
-                <view class="item {{ index == curTypeIndex ? 'active' : '' }}" wx:for="{{ typeList }}" wx:key="id" data-index="{{ index }}">{{ item.name }}</view>
+                <block wx:for="{{ typeList }}" wx:key="id">
+                    <view class="item {{ index == curTypeIndex ? 'active' : '' }}" data-index="{{ index }}" wx:if="{{ item.subtype && item.subtype.length }}">{{ item.name }}</view>
+                </block>
             </scroll-view>
             <scroll-view class="subtype-list" scroll-y>
                 <view class="item" wx:for="{{ subtype }}" wx:key="id" @tap="selectItem({{ item.id }})">{{ item.name }}</view>
