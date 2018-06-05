@@ -21,6 +21,16 @@ const ajax = (url, method, data = {}, cfg = {}) => {
             fail(res) {
                 reject({ errMsg: res });
             },
+            complete() {
+                // 500ms后才关闭，提升体验
+                setTimeout(() => {
+                    wx.hideLoading();
+                }, 500);
+            },
+        });
+
+        wx.showLoading({
+            title: '加载中',
         });
 
         // v1.4.0
@@ -28,6 +38,7 @@ const ajax = (url, method, data = {}, cfg = {}) => {
             // 超时设置
             setTimeout(() => {
                 reqTask.abort();
+                wx.hideLoading();
             }, timeout);
         }
     });

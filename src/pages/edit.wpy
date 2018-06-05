@@ -80,7 +80,7 @@ export default class Index extends wepy.page {
                 category_id: cateogryId,
                 time: dataTime,
                 comment,
-            } = await get(`/bill?id=${id}`);
+            } = options;
 
             const [, date, time] = dataTime.match(/([0-9]{4}-[0-9]{2}-[0-9]{2}) ([0-9]{2}:[0-9]{2})/);
 
@@ -196,7 +196,6 @@ export default class Index extends wepy.page {
 <style lang="scss">
 @import '../mixin.scss';
 
-$itemHeight: 100rpx;
 $topSpace: 80rpx; // 单元格之间的间距
 $twoSideSpace: 50rpx; // 两边间距
 

@@ -8,7 +8,7 @@
             </scroll-view>
             <scroll-view class="subtype-list" scroll-y>
                 <block wx:for="{{ subtype }}" wx:key="id">
-                    <view class="item" @tap="selectItem({{ item.id }})">{{ item.name }}<view class="icon-star {{ item.star === true ? 'star' : '' }}" @tap="star({{ item.id }}, {{ item.star || false }})"></view></view>
+                    <view class="item" @tap="selectItem({{ item.id }})">{{ item.name }}<view class="icon-star {{ item.star === true ? 'star' : '' }}" @tap.stop="star({{ item.id }}, {{ item.star || false }})"></view></view>
                 </block>
             </scroll-view>
         </view>
@@ -102,8 +102,6 @@ export default class Index extends wepy.page {
 <style lang="scss">
 @import '../mixin.scss';
 
-$itemHeight: 100rpx;
-
 // 高度占满
 .container {
     height: 100%;
@@ -168,12 +166,14 @@ $itemHeight: 100rpx;
                 position: absolute;
                 display: block;
                 content: '';
-                width: 48rpx;
-                height: 48rpx;
+                width: 100rpx;
+                height: 100rpx;
                 background-image: url('/unstar.png');
-                background-size: 100%;
-                top: 26rpx;
-                right: 26rpx;
+                background-size: 48rpx 48rpx;
+                background-repeat: no-repeat;
+                background-position: top 26rpx right 26rpx;
+                top: 0;
+                right: 0;
             }
             .icon-star.star {
                 background-image: url('/star.png');

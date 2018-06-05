@@ -44,7 +44,7 @@
                             <block wx:for="{{ dayItem.items }}" wx:key="id">
                                 <navigator class="single-item {{ item.type }} {{ index + 1 === dayItem.items.length ? 'last' : '' }}"
                                             @longpress="activeMultiChoose"
-                                            url="/pages/edit?id={{item.id}}">
+                                            url="/pages/edit?id={{item.id}}&type={{item.type}}&money={{item.money}}&category={{item.category}}&category_id={{category_id}}&time={{item.time}}&comment={{item.comment}}">
                                     <view class="info">
                                         <text class="">{{ item.category }}</text>
                                         <text class="time">{{ item.formatTime }}</text>
@@ -226,12 +226,12 @@ $amountMarginRight: 15rpx; // amount里，文字的间距
         }
 
         .value {
-            font-weight: 600;
-            font-size: 36rpx;
+            font-weight: 700;
+            font-size: 40rpx;
         }
 
         .title {
-            font-size: 24rpx;
+            font-size: 28rpx;
             color: #ccc;
         }
     }
@@ -287,9 +287,11 @@ $amountMarginRight: 15rpx; // amount里，文字的间距
 
                 .single-item {
                     @include flex-between;
+
+                    height: $itemHeight;
                     align-items: center;
                     border-bottom: $border;
-                    font-size: 32rpx;
+                    font-size: 36rpx;
                     padding: 20rpx $space 20rpx 0rpx;
                     margin-left: 2 * $amountFontSize + $amountMarginRight;
                     position: relative;
