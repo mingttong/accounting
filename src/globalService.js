@@ -19,15 +19,6 @@ const emitStore = {
 };
 
 const globalSerice =  {
-    setCategory(v) {
-        if (({}).toString.call(v) !== '[object Object]') {
-            data.category = { id: -1, name: '' };
-            return;
-        }
-
-        data.category = v;
-    },
-
     set(name, v) {
 
         if (~storageNameList.indexOf(name)) {

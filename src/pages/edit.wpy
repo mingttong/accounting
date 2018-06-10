@@ -48,7 +48,7 @@ import {
     wechat,
 } from './utils';
 import global from '../globalService';
-import { get, post } from '../http';
+import { post } from '../http';
 import mixin from './mixins';
 
 const typeList = ['outgo', 'income'];
@@ -57,8 +57,8 @@ export default class Index extends wepy.page {
     data = {
         id: '',
         tabId: 0,
-        time: getCurrentTime(),
-        date: getCurrentDate(),
+        time: '',
+        date: '',
         category: null, // 类别
         categoryId: null, // 类别id
         money: 0,
@@ -92,6 +92,10 @@ export default class Index extends wepy.page {
             this.date = date;
             this.time = time;
             this.comment = comment;
+            this.$apply();
+        } else {
+            this.date = getCurrentDate();
+            this.time = getCurrentTime();
             this.$apply();
         }
     }
@@ -172,7 +176,7 @@ export default class Index extends wepy.page {
             this.category = '';
             this.tabId = +id;
 
-            global.setCategory(null);
+            global.set('category', '');
         },
         pickHandle(propName, e) {
             const { value } = e.detail;

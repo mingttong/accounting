@@ -76,7 +76,12 @@ export default class Index extends wepy.page {
             toFilterList = this.subtype; // 因为节点事件方法还不能传对象，所以目前只能先拿到id后再从列表中查找
 
             const item = toFilterList.find((v) => +v.id === +id) || {};
-            global.setCategory(item);
+
+            if (!item) {
+                console.log('ERROR: 选择类型出错');
+            }
+
+            global.set('category', item);
             wx.navigateBack();
         },
 

@@ -44,7 +44,7 @@
                             <block wx:for="{{ dayItem.items }}" wx:key="id">
                                 <navigator class="single-item {{ item.type }} {{ index + 1 === dayItem.items.length ? 'last' : '' }}"
                                             @longpress="activeMultiChoose"
-                                            url="/pages/edit?id={{item.id}}&type={{item.type}}&money={{item.money}}&category={{item.category}}&category_id={{category_id}}&time={{item.time}}&comment={{item.comment}}">
+                                            url="/pages/edit?id={{item.id}}&type={{item.type}}&money={{item.money}}&category={{item.category}}&category_id={{item.category_id}}&time={{item.time}}&comment={{item.comment}}">
                                     <view class="info">
                                         <text class="">{{ item.category }}</text>
                                         <text class="time">{{ item.formatTime }}</text>
