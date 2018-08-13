@@ -1,0 +1,202 @@
+<template>
+    <view class="container">
+        <view class="box">
+            <textarea class="comment" placeholder="请写下您对该摄影师的评价，也可以用标签评价喔~"/>
+            <view class='mod-upload'>
+                <view class="main-body">
+                    <view class="main-body-flex main-boy-line">
+                        <view class="main-upload"></view>
+                        <view class="main-show-image" wx:for='{{ images }}' wx:key='index'>
+                            <image class="main-upload-image" data-index='{{ index }}' src="{{ item }}"/>
+                            <view class="main-del-image"></view>
+                        </view>
+                    </view>
+                </view>
+            </view>
+        </view>
+        <button class="submit">发表</button>
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+import mixin from './mixins';
+import { comment } from './mock';
+
+// import { wechat } from './utils/index';
+// import { post } from '../http/index';
+
+export default class Index extends wepy.page {
+    config = {
+        navigationBarTitleText: '我的评价',
+        backgroundColor: '#eee',
+    };
+    mixins = [mixin];
+    data = {
+        images: [],
+    };
+    onLoad() {
+        const { images } = comment;
+        this.images = images;
+    }
+
+    methods = {
+    };
+}
+</script>
+
+<style lang="scss">
+.container {
+
+    .box {
+        background-color: #FFF;
+        margin-top: 30rpx;
+        padding: 0 30rpx;
+    }
+
+    .comment {
+        width: 630rpx;
+        height: 200rpx;
+        margin: 30rpx 0 60rpx;
+        padding: 30rpx;
+        font-size: 30rpx;
+        background-color: #f6f6f6;
+        border-radius: 4rpx;
+    }
+
+    .main-body{
+        background:#fff;
+        position:relative;
+        .main-boy-line{
+            border-bottom:1rpx solid #eeeeee;
+            padding-bottom:23rpx;
+            position:relative;
+        }
+        .main-body-title{
+            font-size: 26rpx;
+            color: #999999;
+            margin-bottom:16rpx;
+        }
+        .main-body-button{
+            padding:10rpx 20rpx;
+            border: 1px solid #CACACA;
+            background: #FFFFFF;
+            border-radius: 2rpx;
+            font-size: 26rpx;
+            color: #666666;
+            display:inline-block;
+            margin-right:20rpx;
+        }
+        .main-body-button.chosed{
+            background: #4E88FF;
+            border-color:#4E88FF;
+            color:#fff;
+        }
+        .main-body-input{
+            font-size: 26rpx;
+            color: #333333;
+        }
+        .main-upload{
+            width:160rpx;
+            height:160rpx;
+            border: 1rpx solid #CCCCCC;
+            border-radius: 2px;
+            position:relative;
+            display:inline-block;
+            &::before,&:after{
+                background:#d8d8d8;
+                position:absolute;
+                content: '';
+            }
+            &::before{
+                left:40rpx;
+                top:77rpx;
+                width:80rpx;
+                height:6rpx;
+            }
+            &::after{
+                top:40rpx;
+                left:77rpx;
+                width:6rpx;
+                height:80rpx;
+            }
+        }
+        .main-show-image{
+            width:160rpx;
+            height:160rpx;
+            position:relative;
+            .main-upload-image{
+                width:100%;
+                height:100%;
+            }
+            .main-del-image{
+                width:44rpx;
+                height:44rpx;
+                background:url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/main-del-img.png) no-repeat;
+                background-size:100% auto;
+                position:absolute;
+                right:-10rpx;
+                top:-10rpx;
+            }
+        }
+        .main-body-remind{
+            font-size: 26rpx;
+            color: #999999;
+            line-height:38rpx;
+            position:absolute;
+            left:220rpx;
+            top:85rpx;
+        }
+        .main-download-button{
+            border: 1rpx solid #4E88FF;
+            width:156rpx;
+            height:56rpx;
+            text-align:center;
+            line-height:56rpx;
+            color:#4E88FF;
+            font-size:30rpx;
+            position:absolute;
+            left:220rpx;
+            bottom:23rpx;
+        }
+
+        .main-body-textarea{
+            width:100%;
+            line-height:48rpx;
+            font-size: 30rpx;
+        }
+        .main-text-size{
+            padding-bottom:20rpx;
+            font-size: 24rpx;
+            color: #CCCCCC;
+            text-align:right;
+        }
+        .addArticle{
+            font-size: 30rpx;
+            color: #4E88FF;
+            letter-spacing: 0;
+            text-align: right;
+            position:absolute;
+            right:0;top:0;
+        }
+        .main-boy-line.main-body-flex {
+            display:flex;
+            flex-wrap:wrap;
+            justify-content:start;
+            align-items:center;
+            .main-upload,.main-show-image{
+                margin:0 0 20rpx 13rpx;
+            }
+        }
+    }
+
+    .submit {
+        background-color: #4e88ff;
+        width: 690rpx;
+        border-radius: 4rpx;
+        color: #FFF;
+        font-size: 34rpx;
+        margin-top: 120rpx;
+    }
+}
+</style>
