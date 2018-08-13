@@ -1,0 +1,107 @@
+<template>
+    <view class="container">
+        <view class="section">
+            <view class="form-item">
+                <view class="label">拍摄时间</view>
+                <input class="input" type="text" placeholder="请输入"/>
+            </view>
+            <view class="form-item">
+                <view class="label">拍摄地点</view>
+                <input type="text" class="input" placeholder="请输入"/>
+            </view>
+            <view class="form-item">
+                <view class="label">拍摄类型</view>
+                <input type="text" class="input" placeholder="请输入"/>
+            </view>
+        </view>
+        <view class="section">
+            <view class="form-item">
+                <view class="label">拍摄师价位</view>
+                <input type="text" class="input" placeholder="请输入"/>
+            </view>
+            <view class="form-item textarea">
+                <view class="label">其他需求</view>
+                <textarea type="text" class="input" placeholder="请输入"/>
+            </view>
+        </view>
+
+        <button class="save">保存</button>
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+import mixin from './mixins';
+// import { wechat } from './utils/index';
+// import { post } from '../http/index';
+
+export default class Index extends wepy.page {
+    config = {
+        navigationBarTitleText: '我的要求',
+        backgroundColor: '#eee',
+    };
+    mixins = [mixin];
+    data = {
+        avatar: '',
+        nickName: '',
+        showUserInfo: false,
+        isLoading: true,
+    };
+    onLoad() {
+    }
+
+    methods = {
+    };
+}
+</script>
+
+<style lang="scss">
+.container {
+    .section {
+        margin-top: 20rpx;
+        background-color: #FFF;
+        .form-item {
+            border-bottom: 1rpx solid #f3f3f3;
+            padding: 23rpx 0;
+            margin: 0 30rpx;
+            display: flex;
+            justify-content: space-between;
+            font-size: 30rpx;
+            line-height: 42rpx;
+            color: #999;
+
+            .label {
+                margin-right: 30rpx;
+            }
+
+            .input {
+                font-size: 28rpx;
+                flex-grow: 1;
+                text-align: right;
+            }
+        }
+
+        .form-item.textarea {
+            flex-direction: column;
+            .input {
+                margin-top: 24rpx;
+                padding: 20rpx 20rpx;
+                width: 100%;
+                text-align: left;
+                background-color: #f6f6f6;
+                box-sizing: border-box;
+                border-radius: 4rpx;
+            }
+        }
+    }
+
+    .save {
+        background-color: #4e88ff;
+        width: 690rpx;
+        border-radius: 4rpx;
+        color: #FFF;
+        font-size: 34rpx;
+        margin-top: 120rpx;
+    }
+}
+</style>

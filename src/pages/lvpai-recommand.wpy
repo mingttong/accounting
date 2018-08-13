@@ -1,0 +1,159 @@
+<template>
+    <view class="container">
+        <view class="box" wx:for="{{ list }}" wx:key="index">
+            <view class="info">
+                <image src="{{ item.avator }}" />
+                <view class="detail">
+                    <view class="name">{{ item.name }}</view>
+                    <view class="tags">
+                        <view class="icon" wx:for="{{ item.tags }}" wx:key="index" wx:for-item="tag">{{ tag }}</view>
+                    </view>
+                    <view class="star">
+                        <view class="icon-star"></view>
+                        <view class="icon-star"></view>
+                        <view class="icon-star"></view>
+                        <view class="icon-star"></view>
+                        <view class="icon-star"></view>
+                    </view>
+                </view>
+            </view>
+            <view class="album">
+                <view class="label">个人作品</view>
+                <view class="images">
+                    <image src="{{ src }}" wx:for="{{ item.album }}" wx:for-item="src"/>
+                </view>
+            </view>
+            <view class="see-detail">
+                <view>详情</view><view class="icon-see-more"></view>
+            </view>
+        </view>
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+import mixin from './mixins';
+import { recommand as list } from './mock';
+
+// import { wechat } from './utils/index';
+// import { post } from '../http/index';
+
+export default class Index extends wepy.page {
+    config = {
+        navigationBarTitleText: '我要约拍',
+        backgroundColor: '#eee',
+    };
+    mixins = [mixin];
+    data = {
+        list: [],
+    };
+    onLoad() {
+        this.list = list;
+    }
+
+    methods = {
+    };
+}
+</script>
+
+<style lang="scss">
+.container {
+    padding: 0 30rpx;
+    .box {
+        margin-top: 30rpx;
+        padding: 36rpx 26rpx;
+        background-color: #fff;
+        position: relative;
+        box-shadow: 0 1px 10px 0 rgba(0,0,0,0.10);
+
+        .info {
+            display: flex;
+            margin-bottom: 30rpx;
+
+            image {
+                width: 124rpx;
+                height: 124rpx;
+                margin-right: 20rpx;
+                background-color: #ccc;
+            }
+
+            .detail {
+                .name {
+                    font-size: 30rpx;
+                    line-height: 42rpx;
+                    color: #333;
+                }
+
+                .tags {
+                    display: flex;
+                    margin-top: 8rpx;
+
+                    .icon {
+                        background-color: #fff5e6;
+                        border-radius: 2rpx;
+                        color: #f5da45;
+                        margin-right: 6rpx;
+                        padding: 6rpx;
+                        font-size: 24rpx;
+                    }
+                }
+
+                .star {
+                    display: flex;
+                    margin-top: 6rpx;
+                }
+            }
+        }
+
+        .album {
+            padding-top: 30rpx;
+            display: flex;
+            border-top: 1rpx solid #f3f3f3;
+
+            .label {
+                font-size: 30rpx;
+                line-height: 100rpx;
+                margin-right: 30rpx;
+            }
+            .images {
+                display: flex;
+
+                image {
+                    width: 100rpx;
+                    height: 100rpx;
+                    margin-right: 20rpx;
+                }
+            }
+        }
+
+        .see-detail {
+            font-size: 24rpx;
+            color: #999;
+            position: absolute;
+            right: 26rpx;
+            top: 36rpx;
+            display: flex;
+            line-height: 26rpx;
+            height: 26rpx;
+
+            .icon-see-more {
+                margin-left: 4rpx;
+            }
+        }
+    }
+}
+
+.icon-see-more {
+    background-image: url('/see-more.png');
+    width: 26rpx;
+    height: 26rpx;
+    background-size: 26rpx 26rpx;
+}
+$starWidth: 26rpx;
+.icon-star {
+    background-image: url('/star.png');
+    width: $starWidth;
+    height: $starWidth;
+    background-size: $starWidth $starWidth;
+}
+</style>

@@ -10,6 +10,10 @@ export default class extends wepy.app {
             'pages/edit',
             'pages/category',
             'pages/login',
+            'pages/lvpai-my-require',
+            'pages/lvpai-recommand',
+            'pages/lvpai-home-page',
+            'pages/lvpai-confirm',
         ],
         window: {
             backgroundTextStyle: 'light',

@@ -1,0 +1,129 @@
+<template>
+    <view class="container">
+        <view class="box">
+            <view class="top">
+                <view class="title">约拍信息</view>
+                <view class="time">8月10日 20:58</view>
+            </view>
+            <view class="price">
+                <view class="label">交易金额</view>
+                <view class="value">800元</view>
+            </view>
+            <view class="info">
+                <view class="section">
+                    <view class="label">摄影师昵称</view>
+                    <view class="value">Jay</view>
+                </view>
+                <view class="section">
+                    <view class="label">时间</view>
+                    <view class="value">9月1日-9月2日 全天</view>
+                </view>
+                <view class="section">
+                    <view class="label">地点</view>
+                    <view class="value">巴厘岛</view>
+                </view>
+            </view>
+        </view>
+        <button class="pay">支付</button>
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+import mixin from './mixins';
+import { recommand as list } from './mock';
+
+// import { wechat } from './utils/index';
+// import { post } from '../http/index';
+
+export default class Index extends wepy.page {
+    config = {
+        navigationBarTitleText: '确认信息',
+        backgroundColor: '#eee',
+    };
+    mixins = [mixin];
+    data = {
+        list: [],
+    };
+    onLoad() {
+        this.list = list;
+    }
+
+    methods = {
+    };
+}
+</script>
+
+<style lang="scss">
+.container {
+    padding: 0 30rpx;
+    .box {
+        margin-top: 30rpx;
+        padding: 36rpx 26rpx;
+        box-shadow: 0 1px 10px 0 rgba(0,0,0,0.10);
+        background-color: #fff;
+        border-radius: 8rpx;
+
+        .top {
+            .title {
+                font-size: 30rpx;
+            }
+            .time {
+                font-size: 26rpx;
+                color: #999;
+            }
+        }
+
+        .price {
+            border-bottom: 1rpx dashed #f3f3f3;
+            text-align: center;
+            padding: 30rpx 0;
+            .label {
+                font-size: 28rpx;
+                color: #999;
+            }
+            .value {
+                font-size: 60rpx;
+            }
+        }
+
+        .info {
+            margin-top: 30rpx;
+            .section {
+                display: flex;
+                font-size: 28rpx;
+                margin-bottom: 18rpx;
+
+                .label {
+                    color: #999;
+                    margin-right: 20rpx;
+                    width: 150rpx;
+                }
+            }
+        }
+    }
+
+    .pay {
+        background-color: #4e88ff;
+        width: 690rpx;
+        border-radius: 4rpx;
+        color: #FFF;
+        font-size: 34rpx;
+        margin-top: 120rpx;
+    }
+}
+
+.icon-see-more {
+    background-image: url('/see-more.png');
+    width: 26rpx;
+    height: 26rpx;
+    background-size: 26rpx 26rpx;
+}
+$starWidth: 26rpx;
+.icon-star {
+    background-image: url('/star.png');
+    width: $starWidth;
+    height: $starWidth;
+    background-size: $starWidth $starWidth;
+}
+</style>
