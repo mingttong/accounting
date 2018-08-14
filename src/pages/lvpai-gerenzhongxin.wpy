@@ -1,0 +1,33 @@
+<template>
+    <view>个人中心</view>
+</template>
+
+<script>
+import wepy from 'wepy';
+import mixin from './mixins';
+import { comment } from './mock';
+
+// import { wechat } from './utils/index';
+// import { post } from '../http/index';
+
+export default class Index extends wepy.page {
+    config = {
+        navigationBarTitleText: '个人中心',
+        backgroundColor: '#eee',
+    };
+    mixins = [mixin];
+    data = {
+        images: [],
+    };
+    onLoad() {
+        const { images } = comment;
+        this.images = images;
+    }
+
+    methods = {
+    };
+}
+</script>
+
+<style lang="scss">
+</style>

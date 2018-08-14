@@ -5,22 +5,8 @@
                 <image src="{{ item.avator }}" />
                 <view class="detail">
                     <view class="name">{{ item.name }}</view>
-                    <view class="tags">
-                        <view class="icon" wx:for="{{ item.tags }}" wx:key="index" wx:for-item="tag">{{ tag }}</view>
-                    </view>
-                    <view class="star">
-                        <view class="icon-star"></view>
-                        <view class="icon-star"></view>
-                        <view class="icon-star"></view>
-                        <view class="icon-star"></view>
-                        <view class="icon-star"></view>
-                    </view>
-                </view>
-            </view>
-            <view class="album">
-                <view class="label">个人作品</view>
-                <view class="images">
-                    <image src="{{ src }}" wx:for="{{ item.album }}" wx:key="index" wx:for-item="src"/>
+                    <view class="require">拍摄类型: 旅拍</view>
+                    <view class="require">要求: 帅</view>
                 </view>
             </view>
             <view class="see-detail" @tap="toDetail">
@@ -54,7 +40,7 @@ export default class Index extends wepy.page {
     methods = {
         toDetail() {
             wx.navigateTo({
-                url: '/pages/lvpai-home-page',
+                url: '/pages/lvpai-home-page-cus',
             });
         },
     };
@@ -84,7 +70,7 @@ export default class Index extends wepy.page {
 
             .detail {
                 .name {
-                    font-size: 30rpx;
+                    font-size: 32rpx;
                     line-height: 42rpx;
                     color: #333;
                 }
@@ -106,6 +92,11 @@ export default class Index extends wepy.page {
                 .star {
                     display: flex;
                     margin-top: 6rpx;
+                }
+
+                .require {
+                    color: #999;
+                    font-size: 28rpx;
                 }
             }
         }

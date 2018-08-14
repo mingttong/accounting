@@ -191,7 +191,7 @@ export default class Index extends wepy.page {
     }
 
     .submit {
-        background-color: #4e88ff;
+        background-color: #87bfce;
         width: 690rpx;
         border-radius: 4rpx;
         color: #FFF;

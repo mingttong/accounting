@@ -13,19 +13,13 @@
                 <view class="label">拍摄类型</view>
                 <input type="text" class="input" placeholder="请输入"/>
             </view>
-        </view>
-        <view class="section">
             <view class="form-item">
-                <view class="label">拍摄师价位</view>
-                <input type="text" class="input" placeholder="请输入"/>
-            </view>
-            <view class="form-item textarea">
-                <view class="label">其他需求</view>
-                <textarea type="text" class="input" placeholder="请输入"/>
+                <view class="label">报价</view>
+                <input type="text" class="input" value="500" placeholder="请输入"/>
             </view>
         </view>
 
-        <button class="save" @tap="save">发布</button>
+        <button class="save" @tap="submit">提交</button>
     </view>
 </template>
 
@@ -37,7 +31,7 @@ import mixin from './mixins';
 
 export default class Index extends wepy.page {
     config = {
-        navigationBarTitleText: '我的要求',
+        navigationBarTitleText: '订单信息',
         backgroundColor: '#eee',
     };
     mixins = [mixin];
@@ -51,9 +45,9 @@ export default class Index extends wepy.page {
     }
 
     methods = {
-        save() {
+        submit() {
             wx.navigateTo({
-                url: '/pages/lvpai-recommand',
+                url: '/pages/lvpai-confirm',
             });
         },
     };

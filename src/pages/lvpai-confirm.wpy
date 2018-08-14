@@ -24,7 +24,7 @@
                 </view>
             </view>
         </view>
-        <button class="pay">支付</button>
+        <button class="pay" @tap="submit">支付</button>
     </view>
 </template>
 
@@ -50,6 +50,11 @@ export default class Index extends wepy.page {
     }
 
     methods = {
+        submit() {
+            wx.showModal({
+                content: '支付成功！',
+            });
+        },
     };
 }
 </script>

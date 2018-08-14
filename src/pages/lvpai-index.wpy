@@ -1,0 +1,162 @@
+<template>
+    <view class="container">
+        <view class="tabs-wrap">
+            <view class="tab-box" @tap="selectTab({{ 0 }})" :class="{ selected: curTab === 0 }">同城</view>
+            <view class="tab-box" @tap="selectTab({{ 1 }})" :class="{ selected: curTab === 1 }">关注</view>
+            <view class="tab-box" @tap="selectTab({{ 2 }})" :class="{ selected: curTab === 2 }">热门</view>
+        </view>
+        <view class="pub-list">
+            <view class="box" wx:for="{{ list }}" wx:key="index">
+                <view class="info" @tap="toDetail({{ item.type }})">
+                    <image class="avator" mode="aspectFill" src="{{ item.avator }}" />
+                    <view class="center">
+                        <view class="username">{{ item.username }}</view>
+                        <view class="time">{{ item.time }}</view>
+                    </view>
+                    <view class="position"><view class="icon-position"></view>{{ item.position }}</view>
+                </view>
+                <image class="big-image" mode="aspectFill" src="{{ item.post }}" />
+                <view class="title">{{ item.title }}</view>
+                <view class="summary">{{ item.summary }}</view>
+            </view>
+        </view>
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+import mixin from './mixins';
+import { index } from './mock';
+
+// import { wechat } from './utils/index';
+// import { post } from '../http/index';
+
+export default class Index extends wepy.page {
+    config = {
+        navigationBarTitleText: '首页',
+        backgroundColor: '#eee',
+    };
+    mixins = [mixin];
+    data = {
+        curTab: 0,
+        list: [],
+    };
+    onLoad() {
+        const { list } = index;
+        this.list = list;
+    }
+
+    methods = {
+        selectTab(idx) {
+            this.curTab = +idx;
+        },
+        toDetail(type) {
+            let url = '/pages/lvpai-home-page-cus';
+
+            if (type === 1 || type === '1') {
+                url = '/pages/lvpai-home-page';
+            }
+            wx.navigateTo({
+                url,
+            });
+        },
+    };
+}
+</script>
+
+<style lang="scss">
+.container {
+    padding-top: 110rpx;
+
+    .tabs-wrap {
+        display:flex;
+        justify-content:center;
+        width: 100%;
+        background: #fff;
+        position: fixed;
+        top: 0;
+        z-index: 100;
+        border-top: 2rpx solid #f3f3f3;
+        font-size: 30rpx;
+    }
+    .tabs-wrap .tab-box {
+        text-align: center;
+        line-height: 88rpx;
+        color: #666666;
+        width: 200rpx;
+        &.selected {
+            color: #87bfce;
+        }
+        &.selected::after {
+            display: block;
+            content: '';
+            width: 100rpx;
+            height: 6rpx;
+            margin: 0 auto;
+            background: #87bfce;
+            border-radius: 42rpx;
+        }
+    }
+    .pub-list {
+        background-color: #FFF;
+        padding: 0 30rpx;
+        .box {
+            border-bottom: 1rpx solid #f3f3f3;
+            padding-bottom: 30rpx;
+            .info {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                height: 100rpx;
+
+                .avator {
+                    width: 68rpx;
+                    height: 68rpx;
+                    border-radius: 50%;
+                    margin-right: 15rpx;
+                }
+
+                .center {
+                    flex-grow: 1;
+                    .username {
+                        font-size: 28rpx;
+                    }
+                    .time {
+                        font-size: 24rpx;
+                        color: #999;
+                    }
+                }
+
+                .position {
+                    display: flex;
+                    align-items: center;
+                    font-size: 28rpx;
+                    line-height: 28rpx;
+                    .icon-position {
+                        background-image: url('/location.png');
+                        background-size: 28rpx 28rpx;
+                        width: 28rpx;
+                        height: 28rpx;
+                    }
+                }
+            }
+
+            .big-image {
+                width: 690rpx;
+                height: 690rpx;
+                border-radius: 10rpx;
+            }
+
+            .title {
+                font-size: 32rpx;
+                margin-bottom: 15rpx;
+            }
+
+            .summary {
+                color: #999;
+                font-size: 24rpx;
+            }
+        }
+    }
+}
+</style>

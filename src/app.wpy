@@ -5,6 +5,7 @@ import 'wepy-async-function';
 export default class extends wepy.app {
     config = {
         pages: [
+            'pages/lvpai-index',
             'pages/index',
             'pages/me',
             'pages/edit',
@@ -15,6 +16,14 @@ export default class extends wepy.app {
             'pages/lvpai-home-page',
             'pages/lvpai-confirm',
             'pages/lvpai-comment',
+            'pages/lvpai-person-info',
+            'pages/lvpai-my-time',
+            'pages/lvpai-recommand-bus', // 摄影师角度
+            'pages/lvpai-home-page-cus', // 顾客的主页
+            'pages/lvpai-order-info',
+            'pages/lvpai-publish',
+            'pages/lvpai-gerenzhongxin',
+            'pages/lvpai-tiaozhuanyaoqiu',
         ],
         window: {
             backgroundTextStyle: 'light',
@@ -25,16 +34,28 @@ export default class extends wepy.app {
         tabBar: {
             list: [
                 {
-                    pagePath: 'pages/index',
-                    text: '账单',
-                    iconPath: '/assets/bill.png',
-                    selectedIconPath: '/assets/bill-focus.png',
+                    pagePath: 'pages/lvpai-index',
+                    text: '首页',
+                    iconPath: '/assets/index.png',
+                    selectedIconPath: '/assets/index-select.png',
                 },
                 {
-                    pagePath: 'pages/me',
-                    text: '我的',
-                    iconPath: '/assets/me.png',
-                    selectedIconPath: '/assets/me-focus.png',
+                    pagePath: 'pages/lvpai-index',
+                    text: '分享美照',
+                    iconPath: '/assets/publish.png',
+                    selectedIconPath: '/assets/publish-select.png',
+                },
+                {
+                    pagePath: 'pages/lvpai-tiaozhuanyaoqiu',
+                    text: '发布消息',
+                    iconPath: '/assets/add.png',
+                    selectedIconPath: '/assets/add-select.png',
+                },
+                {
+                    pagePath: 'pages/lvpai-gerenzhongxin',
+                    text: '个人中心',
+                    iconPath: '/assets/center.png',
+                    selectedIconPath: '/assets/center-select.png',
                 },
             ],
         },

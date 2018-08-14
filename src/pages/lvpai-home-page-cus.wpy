@@ -6,36 +6,13 @@
                 <view class='row-my-info'>
                     <view class='column-my-base'>
                         <view class="mod-my-center-wrap">
-                            <image class='mod-my-photo' mode="aspectFill" src="http://qnm.hunliji.com/o_1aj420kfj1b7tqgkjmphha10itr.jpg" />
+                            <image class='mod-my-photo' mode="aspectFill" src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1534175502731&di=2b2fd4b6300d9f000d6dccbe6d3ad8c5&imgtype=0&src=http%3A%2F%2Fatt.bbs.duowan.com%2Fforum%2F201407%2F26%2F211802oixbk4pppzogpbiy.jpg" />
                         </view>
                         <view class='mod-my-nickname'>Jay</view>
-                        <view class="star">
-                            <view class="icon-star"></view>
-                            <view class="icon-star"></view>
-                            <view class="icon-star"></view>
-                            <view class="icon-star"></view>
-                            <view class="icon-star"></view>
-                        </view>
                         <view class="mod-my-pet-status">
-                            <text>100元/小时</text>
-                            <text>400元/天</text>
                             <text>北京</text>
                         </view>
-                        <view class='mod-pet-desc'>这里是简介</view>
-                    </view>
-                </view>
-                <view class='row row-my-sum'>
-                    <view class='column column-my-sum column-split'>
-                        <text class='mod-my-sum-val'>500</text>
-                        <text class='mod-my-sum-name'>被关注</text>
-                    </view>
-                    <view class='column column-my-sum column-split'>
-                        <text class='mod-my-sum-val'>2010</text>
-                        <text class='mod-my-sum-name'>订单量</text>
-                    </view>
-                    <view class='column column-my-sum'>
-                        <text class='mod-my-sum-val'>100</text>
-                        <text class='mod-my-sum-name'>被点赞</text>
+                        <view class='mod-pet-desc'>我是一个爱旅游的男孩</view>
                     </view>
                 </view>
                 <view bindtap='onSenseHandler' class='row row-my-upload'>关注他</view>
@@ -66,7 +43,7 @@ import { homePage } from './mock';
 
 export default class Index extends wepy.page {
     config = {
-        navigationBarTitleText: '摄影师主页',
+        navigationBarTitleText: '拍客详情',
         backgroundColor: '#eee',
     };
     mixins = [mixin];
@@ -140,7 +117,7 @@ $starWidth: 26rpx;
 
 .mod-my-card {
   width: 100%;
-  height: 616rpx;
+  height: 476rpx;
   position: relative;
 }
 
@@ -298,12 +275,12 @@ $starWidth: 26rpx;
 
 .mod-my-pet-status {
   margin-top: 5rpx;
-  padding: 0 170rpx 0 110rpx;
+  padding: 0 110rpx 0 110rpx;
   line-height: 38rpx;
   font-size: 26rpx;
   color: #999;
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
 }
 
 
