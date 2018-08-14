@@ -1,0 +1,210 @@
+.container {
+  padding-bottom: 92rpx;
+}
+
+.container .section {
+  margin-top: 20rpx;
+  background-color: #FFF;
+}
+
+.container .section .form-item {
+  border-bottom: 1rpx solid #f3f3f3;
+  padding: 23rpx 0;
+  margin: 0 30rpx;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-box-pack: justify;
+  -webkit-justify-content: space-between;
+          justify-content: space-between;
+  font-size: 30rpx;
+  line-height: 42rpx;
+  color: #999;
+}
+
+.container .section .form-item .label {
+  margin-right: 30rpx;
+}
+
+.container .section .form-item .input {
+  color: #000;
+  font-size: 28rpx;
+  -webkit-box-flex: 1;
+  -webkit-flex-grow: 1;
+          flex-grow: 1;
+  text-align: right;
+}
+
+.container .section .form-item.textarea {
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: column;
+          flex-direction: column;
+}
+
+.container .section .form-item.textarea .input {
+  margin-top: 24rpx;
+  padding: 20rpx 20rpx;
+  width: 100%;
+  text-align: left;
+  background-color: #f6f6f6;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+  border-radius: 4rpx;
+}
+
+.container .save {
+  background-color: #87bfce;
+  width: 750rpx;
+  color: #FFF;
+  position: fixed;
+  border-radius: 0;
+  bottom: 0;
+}
+
+.container .save::after {
+  border: none;
+}
+
+.main-body {
+  background: #fff;
+  position: relative;
+  margin-top: 20rpx;
+}
+
+.main-body .main-body-title {
+  font-size: 26rpx;
+  color: #999999;
+  margin-bottom: 16rpx;
+}
+
+.main-body .main-body-button {
+  padding: 10rpx 20rpx;
+  border: 1px solid #CACACA;
+  background: #FFFFFF;
+  border-radius: 2rpx;
+  font-size: 26rpx;
+  color: #666666;
+  display: inline-block;
+  margin-right: 20rpx;
+}
+
+.main-body .main-body-button.chosed {
+  background: #4E88FF;
+  border-color: #4E88FF;
+  color: #fff;
+}
+
+.main-body .main-body-input {
+  font-size: 26rpx;
+  color: #333333;
+}
+
+.main-body .main-upload {
+  width: 160rpx;
+  height: 160rpx;
+  border: 1rpx solid #CCCCCC;
+  border-radius: 2px;
+  position: relative;
+  display: inline-block;
+}
+
+.main-body .main-upload::before, .main-body .main-upload:after {
+  background: #d8d8d8;
+  position: absolute;
+  content: '';
+}
+
+.main-body .main-upload::before {
+  left: 40rpx;
+  top: 77rpx;
+  width: 80rpx;
+  height: 6rpx;
+}
+
+.main-body .main-upload::after {
+  top: 40rpx;
+  left: 77rpx;
+  width: 6rpx;
+  height: 80rpx;
+}
+
+.main-body .main-show-image {
+  width: 160rpx;
+  height: 160rpx;
+  position: relative;
+}
+
+.main-body .main-show-image .main-upload-image {
+  width: 100%;
+  height: 100%;
+}
+
+.main-body .main-show-image .main-del-image {
+  width: 44rpx;
+  height: 44rpx;
+  background: url(https://static.58.com/lbg/shangjiaxcxht/zhushou/img/main-del-img.png) no-repeat;
+  background-size: 100% auto;
+  position: absolute;
+  right: -10rpx;
+  top: -10rpx;
+}
+
+.main-body .main-body-remind {
+  font-size: 26rpx;
+  color: #999999;
+  line-height: 38rpx;
+  position: absolute;
+  left: 220rpx;
+  top: 85rpx;
+}
+
+.main-body .main-download-button {
+  border: 1rpx solid #4E88FF;
+  width: 156rpx;
+  height: 56rpx;
+  text-align: center;
+  line-height: 56rpx;
+  color: #4E88FF;
+  font-size: 30rpx;
+  position: absolute;
+  left: 220rpx;
+  bottom: 23rpx;
+}
+
+.main-body .main-body-textarea {
+  width: 100%;
+  line-height: 48rpx;
+  font-size: 30rpx;
+}
+
+.main-body .main-text-size {
+  padding-bottom: 20rpx;
+  font-size: 24rpx;
+  color: #CCCCCC;
+  text-align: right;
+}
+
+.main-body .addArticle {
+  font-size: 30rpx;
+  color: #4E88FF;
+  letter-spacing: 0;
+  text-align: right;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+.main-body .main-boy-line.main-body-flex {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-wrap: wrap;
+          flex-wrap: wrap;
+  -webkit-box-pack: start;
+  -webkit-justify-content: start;
+          justify-content: start;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+          align-items: center;
+}

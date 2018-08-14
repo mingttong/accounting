@@ -1,0 +1,117 @@
+{
+	"description": "项目配置文件。",
+	"packOptions": {
+		"ignore": []
+	},
+	"setting": {
+		"urlCheck": true,
+		"es6": false,
+		"postcss": false,
+		"minified": false,
+		"newFeature": true
+	},
+	"compileType": "miniprogram",
+	"libVersion": "1.9.91",
+	"appid": "wxc594bc8d2f979bd4",
+	"projectname": "%E9%9A%8F%E6%89%8B%E8%AE%B0%E8%B4%A6%E5%B0%8F%E7%A8%8B%E5%BA%8F",
+	"svr": "",
+	"client": "",
+	"qcloudRoot": "",
+	"miniprogramRoot": "",
+	"pluginRoot": "",
+	"scripts": {},
+	"condition": {
+		"search": {
+			"current": -1,
+			"list": []
+		},
+		"conversation": {
+			"current": -1,
+			"list": []
+		},
+		"plugin": {
+			"current": -1,
+			"list": []
+		},
+		"game": {
+			"list": []
+		},
+		"miniprogram": {
+			"current": -1,
+			"list": [
+				{
+					"id": -1,
+					"name": "旅拍-我的要求",
+					"pathName": "pages/lvpai-my-require",
+					"query": ""
+				},
+				{
+					"id": 5,
+					"name": "旅拍-我要约拍",
+					"pathName": "pages/lvpai-recommand",
+					"query": ""
+				},
+				{
+					"id": -1,
+					"name": "旅拍-主页",
+					"pathName": "pages/lvpai-home-page",
+					"query": ""
+				},
+				{
+					"id": 7,
+					"name": "旅拍-确认信息",
+					"pathName": "pages/lvpai-confirm",
+					"query": ""
+				},
+				{
+					"id": 8,
+					"name": "旅拍-评论",
+					"pathName": "pages/lvpai-comment",
+					"query": ""
+				},
+				{
+					"id": -1,
+					"name": "个人信息",
+					"pathName": "pages/lvpai-person-info",
+					"query": ""
+				},
+				{
+					"id": 10,
+					"name": "旅拍-摄影师约拍",
+					"pathName": "pages/lvpai-my-time",
+					"query": ""
+				},
+				{
+					"id": 11,
+					"name": "旅拍-我要约拍",
+					"pathName": "pages/lvpai-recommand-bus",
+					"query": ""
+				},
+				{
+					"id": -1,
+					"name": "旅拍-我要约拍-顾客",
+					"pathName": "pages/lvpai-recommand-bus",
+					"query": ""
+				},
+				{
+					"id": -1,
+					"name": "旅拍-拍客详情",
+					"pathName": "pages/lvpai-home-page-cus",
+					"query": ""
+				},
+				{
+					"id": -1,
+					"name": "旅拍-订单信息",
+					"pathName": "pages/lvpai-order-info",
+					"query": ""
+				},
+				{
+					"id": -1,
+					"name": "旅拍-发布",
+					"pathName": "pages/lvpai-publish",
+					"query": ""
+				}
+			]
+		}
+	}
+}

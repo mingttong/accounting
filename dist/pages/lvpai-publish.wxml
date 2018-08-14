@@ -1,0 +1,44 @@
+
+    <view class="container">
+        <view class="box">
+            <view class="infos">
+                <view class="details">
+                    <view class="title"> 
+                        <view class="name">时间：8月1日-8月2日全天</view>
+                    </view>
+                    <view class="title"> 
+                        <view class="name">地点：巴厘岛</view>
+                    </view>
+                    <view class="title"> 
+                        <view class="name">价格：100元/天</view>
+                    </view>
+                </view>
+            </view>
+            <view class="btns">
+                <view class="yuepai" bindtap="shouquan">约拍</view>
+                <view bindtap="decorate">修改</view>
+                <view bindtap="checkDetail">删除</view>
+            </view>
+        </view>
+
+        <view class="box">
+            <view class="infos">
+                <view class="details">
+                    <view class="title"> 
+                        <view class="name">时间：8月3日全天</view>
+                    </view>
+                    <view class="title"> 
+                        <view class="name">地点：巴厘岛</view>
+                    </view>
+                    <view class="title"> 
+                        <view class="name">价格：100元/天</view>
+                    </view>
+                </view>
+            </view>
+            <view class="btns">
+                <view class="yuepai" bindtap="shouquan">约拍</view>
+                <view bindtap="decorate">修改</view>
+                <view bindtap="checkDetail">删除</view>
+            </view>
+        </view>
+    </view>

@@ -1,0 +1,59 @@
+.container .section {
+  margin-top: 20rpx;
+  background-color: #FFF;
+}
+
+.container .section .form-item {
+  border-bottom: 1rpx solid #f3f3f3;
+  padding: 23rpx 0;
+  margin: 0 30rpx;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-box-pack: justify;
+  -webkit-justify-content: space-between;
+          justify-content: space-between;
+  font-size: 30rpx;
+  line-height: 42rpx;
+  color: #999;
+}
+
+.container .section .form-item .label {
+  margin-right: 30rpx;
+}
+
+.container .section .form-item .input {
+  color: #000;
+  font-size: 28rpx;
+  -webkit-box-flex: 1;
+  -webkit-flex-grow: 1;
+          flex-grow: 1;
+  text-align: right;
+}
+
+.container .section .form-item.textarea {
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: column;
+          flex-direction: column;
+}
+
+.container .section .form-item.textarea .input {
+  margin-top: 24rpx;
+  padding: 20rpx 20rpx;
+  width: 100%;
+  text-align: left;
+  background-color: #f6f6f6;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+  border-radius: 4rpx;
+}
+
+.container .save {
+  background-color: #87bfce;
+  width: 690rpx;
+  border-radius: 4rpx;
+  color: #FFF;
+  font-size: 34rpx;
+  margin-top: 120rpx;
+}

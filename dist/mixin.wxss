@@ -1,0 +1,3 @@
+.last {
+  border-bottom: none !important;
+}

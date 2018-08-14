@@ -1,0 +1,29 @@
+
+    <view class="container">
+        <view class="section">
+            <view class="form-item">
+                <view class="label">拍摄时间</view>
+                <input class="input" type="text" placeholder="请输入"/>
+            </view>
+            <view class="form-item">
+                <view class="label">拍摄地点</view>
+                <input type="text" class="input" placeholder="请输入"/>
+            </view>
+            <view class="form-item">
+                <view class="label">拍摄类型</view>
+                <input type="text" class="input" placeholder="请输入"/>
+            </view>
+        </view>
+        <view class="section">
+            <view class="form-item">
+                <view class="label">拍摄师价位</view>
+                <input type="text" class="input" placeholder="请输入"/>
+            </view>
+            <view class="form-item textarea">
+                <view class="label">其他需求</view>
+                <textarea type="text" class="input" placeholder="请输入"/>
+            </view>
+        </view>
+
+        <button class="save" bindtap="save">发布</button>
+    </view>

@@ -1,0 +1,117 @@
+.container {
+  padding: 20rpx 30rpx;
+}
+
+.container .box {
+  background: #FFFFFF;
+  -webkit-box-shadow: 0 1px 10px 0 rgba(0, 0, 0, 0.1);
+          box-shadow: 0 1px 10px 0 rgba(0, 0, 0, 0.1);
+  padding: 30rpx 26rpx 0 26rpx;
+  margin-bottom: 20rpx;
+  position: relative;
+}
+
+.container .box .infos {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  margin-bottom: 28rpx;
+}
+
+.container .box .infos .logBox {
+  margin-top: 6rpx;
+}
+
+.container .box .infos .logBox .logo {
+  width: 124rpx;
+  height: 124rpx;
+  border: 1rpx solid #E7E7E7;
+}
+
+.container .box .infos .details {
+  -webkit-box-flex: 1;
+  -webkit-flex: 1;
+          flex: 1;
+  padding-left: 20rpx;
+}
+
+.container .box .infos .details .title {
+  line-height: 40rpx;
+}
+
+.container .box .infos .details .title .share {
+  width: 80rpx;
+  border: none;
+  position: absolute;
+  font-size: 24rpx;
+  color: #999999;
+  right: 27rpx;
+  top: 25rpx;
+  padding: 0;
+  margin: 0;
+  text-align: right;
+  line-height: inherit;
+  background: url("https://static.58.com/lbg/shangjiaxcxht/zhushou/img/mp_share.png") no-repeat left;
+  background-size: 26rpx 26rpx;
+}
+
+.container .box .infos .details .title .name {
+  display: inline-block;
+  font-size: 32rpx;
+  color: #333333;
+  width: 400rpx;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.container .box .infos .details .icons {
+  margin-top: 8rpx;
+  height: 38rpx;
+}
+
+.container .box .infos .details .icons .icon {
+  display: inline-block;
+  width: 66rpx;
+  height: 38rpx;
+  margin-right: 6rpx;
+}
+
+.container .box .infos .details .deadline {
+  margin-top: 10rpx;
+  line-height: 37rpx;
+  font-size: 26rpx;
+  color: #999999;
+  padding-left: 5rpx;
+}
+
+.container .box .btns {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  border-top: 1rpx solid #F3F3F3;
+  height: 74rpx;
+  line-height: 74rpx;
+  font-size: 28rpx;
+  color: #333333;
+}
+
+.container .box .btns .grey {
+  color: #CCCCCC;
+}
+
+.container .box .btns view {
+  -webkit-box-flex: 1;
+  -webkit-flex: 1;
+          flex: 1;
+  text-align: center;
+  border-left: 1rpx solid #f3f3f3;
+}
+
+.container .box .btns .first {
+  border: none;
+}
+
+.container .box .btns .yuepai {
+  border-left: none !important;
+}

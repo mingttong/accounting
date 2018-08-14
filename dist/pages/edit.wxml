@@ -1,0 +1,40 @@
+
+    <view class="container">
+        <form bindsubmit="save">
+            <view class="tab">
+                <view class="item {{ tabId === 0 ? 'active' : ''}}" bindtap="switchTab" data-wpyswitchtab-a="0">支出</view>
+                <view class="item {{ tabId === 1 ? 'active' : ''}}" bindtap="switchTab" data-wpyswitchtab-a="1">收入</view>
+            </view>
+
+            <view class="detail">
+                <view class="item">
+                    <view class="name">金额</view>
+                    <input class="input-item" placeholder-class="input-holder" name="money" type="digit" maxlength="15" value="{{ money || '' }}" bindblur="inputHandle" placeholder="请输入" data-wpyinputhandle-a="money"/>
+                </view>
+                <view class="item">
+                    <view class="name">类别</view>
+                    <view class="input-item {{ category ? '' : 'input-holder' }}" bindtap="selectCategory" data-wpyselectcategory-a="{{ tabId }}">{{ category || '请选择' }}</view>
+                    <input class="input-hide" name="category" type="text" value="{{ category }}" placeholder=""/>
+                </view>
+                <view class="item last">
+                    <view class="name">时间</view>
+                    <input class="input-hide" name="time" type="text" value="{{ date }} {{ time }}" placeholder=""/>
+                    <picker class="date" mode="date" value="{{ date }}" bindchange="pickHandle" data-wpypickhandle-a="date">
+                        {{ date }}
+                    </picker>
+                    <picker mode="time" value="{{ time }}" bindchange="pickHandle" data-wpypickhandle-a="time">
+                        {{ time }}
+                    </picker>
+                </view>
+            </view>
+
+            <view class="comment">
+                <input name="comment" type="text" value="{{ comment }}" bindblur="inputHandle" placeholder="备注" data-wpyinputhandle-a="comment"/>
+            </view>
+
+            <view class="btn-list">
+                <button type="warn" bindtap="delete">删除</button>
+                <button type="primary" form-type="submit" disabled="{{ !canSubmit }}">保存</button>
+            </view>
+        </form>
+    </view>

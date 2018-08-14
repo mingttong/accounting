@@ -1,0 +1,10 @@
+
+    <view class="container">
+        <view class="userinfo">
+            <block  wx:if="{{ showUserInfo && !isLoading }}">
+                <image class="userinfo-avatar" background-size="cover" src="{{ avatar }}"/>
+                <text class="userinfo-nickname">{{ nickName }}</text>
+            </block>
+            <button open-type="getUserInfo" bindgetuserinfo="onGetUserInfo"  wx:else>点击查看更多信息</button>
+        </view>
+    </view>

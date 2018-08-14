@@ -1,0 +1,15 @@
+
+    <view class="container">
+        <view class="outgo">
+            <scroll-view class="type-list" bindtap="selectType" srcoll-y="srcoll-y">
+                <block  wx:for="{{ typeList }}" wx:key="id">
+                    <view class="item {{ index == curTypeIndex ? 'active' : '' }}" data-index="{{ index }}" wx:if="{{ item.subtype && item.subtype.length }}">{{ item.name }}</view>
+                </block>
+            </scroll-view>
+            <scroll-view class="subtype-list" scroll-y>
+                <block  wx:for="{{ subtype }}" wx:key="id">
+                    <view class="item" bindtap="selectItem" data-wpyselectitem-a="{{ item.id }}">{{ item.name }}<view class="icon-star {{ item.star === true ? 'star' : '' }}" catchtap="star" data-wpystar-a="{{ item.id }}" data-wpystar-b="{{ item.star || false }}"/></view>
+                </block>
+            </scroll-view>
+        </view>
+    </view>

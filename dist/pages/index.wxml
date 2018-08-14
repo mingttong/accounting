@@ -1,0 +1,74 @@
+
+    <view class="container">
+        <view class="header-container">
+            <view class="box">
+                <view class="value">￥{{ totalIncome }}</view>
+                <view class="title">总收入</view>
+            </view>
+            <view class="box">
+                <view class="value">￥{{ totalOutgo }}</view>
+                <view class="title">总支出</view>
+            </view>
+        </view>
+
+        <view class="bill"  wx:if="{{ bills.length }}">
+            <!-- 月 -->
+            <view class="month-item {{ index + 1 === bills.length ? 'last' : '' }}" wx:for="{{ bills }}" wx:for-item="monthItem" wx:key="value">
+                <view class="month-amount">
+                    <view class="date">
+                        <text class="first bold">{{ monthItem.month }}月</text>
+                        <text>{{ monthItem.year }}</text>
+                    </view>
+                    <view class="money">
+                        <text class="first">收:￥{{ monthItem.totalIncome }}</text>
+                        <text>支:￥{{ monthItem.totalOutgo }}</text>
+                    </view>
+                </view>
+
+                <!-- 天 -->
+                <view class="day-list">
+                    <view class="day-item" wx:for="{{ monthItem.items }}" wx:for-item="dayItem" wx:key="value">
+                        <view class="day-amount">
+                            <view class="date">
+                                <text class="first">{{ dayItem.day }}</text>
+                                <text>{{ weekDict[dayItem.week] }}</text>
+                            </view>
+                            <view class="money">
+                                <text class="first">收:￥{{ dayItem.totalIncome }}</text>
+                                <text>支:￥{{ dayItem.totalOutgo }}</text>
+                            </view>
+                        </view>
+
+                        <!-- 单条项目 -->
+                        <view class="single-list">
+                            <block wx:for="{{ dayItem.items }}" wx:key="id">
+                                <navigator class="single-item {{ item.type }} {{ index + 1 === dayItem.items.length ? 'last' : '' }}" bindlongpress="activeMultiChoose" url="/pages/edit?id={{item.id}}&type={{item.type}}&money={{item.money}}&category={{item.category}}&category_id={{item.category_id}}&time={{item.time}}&comment={{item.comment}}">
+                                    <view class="info">
+                                        <text class="">{{ item.category }}</text>
+                                        <text class="time">{{ item.formatTime }}</text>
+                                    </view>
+                                    <view class="value">￥{{ item.money }}</view>
+                                    <view class="mask {{ selectedIdsObj[item.id] ? 'selected' : '' }}" catchtap="selectItem" wx:if="{{ isEditing }}" data-wpyselectitem-a="{{ item.id }}"/>
+                                </navigator>
+                            </block>
+                        </view>
+
+                    </view>
+                    <!-- day-end -->
+                </view>
+
+            </view>
+            <!-- month-end -->
+        </view>
+        <view class="box-empty"  wx:elif="{{ !isLoading }}">
+            你还没有账单哦，赶快点击下方按钮记一笔吧
+        </view>
+
+        <view class="btn-list">
+            <block wx:if="{{ isEditing }}">
+                <button type="warn" bindtap="deleteItems">删除</button>
+                <button type="default" bindtap="cancelEdit">取消</button>
+            </block>
+            <button type="primary" bindtap="addbill" wx:else>记一笔</button>
+        </view>
+    </view>

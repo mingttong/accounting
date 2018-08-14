@@ -1,0 +1,28 @@
+
+    <view class="container">
+        <view class="box">
+            <view class="top">
+                <view class="title">约拍信息</view>
+                <view class="time">8月10日 20:58</view>
+            </view>
+            <view class="price">
+                <view class="label">交易金额</view>
+                <view class="value">800元</view>
+            </view>
+            <view class="info">
+                <view class="section">
+                    <view class="label">摄影师昵称</view>
+                    <view class="value">Jay</view>
+                </view>
+                <view class="section">
+                    <view class="label">时间</view>
+                    <view class="value">9月1日-9月2日 全天</view>
+                </view>
+                <view class="section">
+                    <view class="label">地点</view>
+                    <view class="value">巴厘岛</view>
+                </view>
+            </view>
+        </view>
+        <button class="pay" bindtap="submit">支付</button>
+    </view>

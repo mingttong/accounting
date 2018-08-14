@@ -1,0 +1,23 @@
+
+    <view class="container">
+        <view class="tabs-wrap">
+            <view class="tab-box {{curTab === 0 ? 'selected' : ''}}" bindtap="selectTab"  data-wpyselecttab-a="{{ 0 }}">同城</view>
+            <view class="tab-box {{curTab === 1 ? 'selected' : ''}}" bindtap="selectTab" data-wpyselecttab-a="{{ 1 }}">关注</view>
+            <view class="tab-box {{curTab === 2 ? 'selected' : ''}}" bindtap="selectTab" data-wpyselecttab-a="{{ 2 }}">热门</view>
+        </view>
+        <view class="pub-list">
+            <view class="box"  wx:for="{{ list }}" wx:key="index">
+                <view class="info" bindtap="toDetail" data-wpytodetail-a="{{ item.type }}">
+                    <image class="avator" mode="aspectFill" src="{{ item.avator }}"/>
+                    <view class="center">
+                        <view class="username">{{ item.username }}</view>
+                        <view class="time">{{ item.time }}</view>
+                    </view>
+                    <view class="position"><view class="icon-position"/>{{ item.position }}</view>
+                </view>
+                <image class="big-image" mode="aspectFill" src="{{ item.post }}"/>
+                <view class="title">{{ item.title }}</view>
+                <view class="summary">{{ item.summary }}</view>
+            </view>
+        </view>
+    </view>

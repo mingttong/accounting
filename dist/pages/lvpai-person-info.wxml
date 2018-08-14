@@ -1,0 +1,43 @@
+
+    <view class="container">
+        <view class="section">
+            <view class="form-item">
+                <view class="label">姓名</view>
+                <input class="input" type="text" placeholder="请输入"/>
+            </view>
+            <view class="form-item">
+                <view class="label">身份证号</view>
+                <input type="text" class="input" placeholder="请输入"/>
+            </view>
+        </view>
+        <view class="section">
+            <view class="form-item textarea">
+                <view class="label">自我介绍</view>
+                <textarea type="text" class="input" placeholder="请输入"/>
+            </view>
+            <view class="form-item">
+                <view class="label">擅长拍摄类型</view>
+                <input type="text" class="input" placeholder="请输入"/>
+            </view>
+            <view class="form-item" style="display:block;">
+                <view class="label">作品集</view>
+                <view class="mod-upload">
+                    <view class="main-body">
+                        <view class="main-body-flex main-boy-line">
+                            <view class="main-upload"/>
+                            <view class="main-show-image"  wx:for="{{ images }}" wx:key="index">
+                                <image class="main-upload-image" data-index="{{ index }}" src="{{ item }}"/>
+                                <view class="main-del-image"/>
+                            </view>
+                        </view>
+                    </view>
+                </view>
+            </view>
+            <view class="form-item">
+                <view class="label">预期价位</view>
+                <input type="text" class="input" placeholder="元/小时"/>
+            </view>
+        </view>
+
+        <button class="save">保存</button>
+    </view>

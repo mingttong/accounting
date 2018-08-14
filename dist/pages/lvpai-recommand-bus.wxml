@@ -1,0 +1,16 @@
+
+    <view class="container">
+        <view class="box"  wx:for="{{ list }}" wx:key="index">
+            <view class="info">
+                <image src="{{ item.avator }}"/>
+                <view class="detail">
+                    <view class="name">{{ item.name }}</view>
+                    <view class="require">拍摄类型: 旅拍</view>
+                    <view class="require">要求: 帅</view>
+                </view>
+            </view>
+            <view class="see-detail" bindtap="toDetail">
+                <view>详情</view><view class="icon-see-more"/>
+            </view>
+        </view>
+    </view>

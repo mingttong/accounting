@@ -1,0 +1,30 @@
+
+    <view class="container">
+        <view class="box"  wx:for="{{ list }}" wx:key="index">
+            <view class="info">
+                <image src="{{ item.avator }}"/>
+                <view class="detail">
+                    <view class="name">{{ item.name }}</view>
+                    <view class="tags">
+                        <view class="icon" wx:for="{{ item.tags }}" wx:key="index" wx:for-item="tag">{{ tag }}</view>
+                    </view>
+                    <view class="star">
+                        <view class="icon-star"/>
+                        <view class="icon-star"/>
+                        <view class="icon-star"/>
+                        <view class="icon-star"/>
+                        <view class="icon-star"/>
+                    </view>
+                </view>
+            </view>
+            <view class="album">
+                <view class="label">个人作品</view>
+                <view class="images">
+                    <image src="{{ src }}" wx:for="{{ item.album }}" wx:key="index" wx:for-item="src"/>
+                </view>
+            </view>
+            <view class="see-detail">
+                <view>详情</view><view class="icon-see-more"/>
+            </view>
+        </view>
+    </view>

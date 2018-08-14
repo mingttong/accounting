@@ -1,0 +1,18 @@
+
+    <view class="container">
+        <view class="box">
+            <textarea class="comment" placeholder="请写下您对该摄影师的评价，也可以用标签评价喔~"/>
+            <view class="mod-upload">
+                <view class="main-body">
+                    <view class="main-body-flex main-boy-line">
+                        <view class="main-upload"/>
+                        <view class="main-show-image"  wx:for="{{ images }}" wx:key="index">
+                            <image class="main-upload-image" data-index="{{ index }}" src="{{ item }}"/>
+                            <view class="main-del-image"/>
+                        </view>
+                    </view>
+                </view>
+            </view>
+        </view>
+        <button class="submit">发表</button>
+    </view>

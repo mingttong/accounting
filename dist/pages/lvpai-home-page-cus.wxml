@@ -1,0 +1,33 @@
+
+    <view class="mod-pet-card">
+        <view class="mod-my-card">
+            <view class="mod-my-bg"/>
+            <view class="mod-my-intro">
+                <view class="row-my-info">
+                    <view class="column-my-base">
+                        <view class="mod-my-center-wrap">
+                            <image class="mod-my-photo" mode="aspectFill" src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1534175502731&di=2b2fd4b6300d9f000d6dccbe6d3ad8c5&imgtype=0&src=http%3A%2F%2Fatt.bbs.duowan.com%2Fforum%2F201407%2F26%2F211802oixbk4pppzogpbiy.jpg"/>
+                        </view>
+                        <view class="mod-my-nickname">Jay</view>
+                        <view class="mod-my-pet-status">
+                            <text>北京</text>
+                        </view>
+                        <view class="mod-pet-desc">我是一个爱旅游的男孩</view>
+                    </view>
+                </view>
+                <view bindtap="onSenseHandler" class="row row-my-upload">关注他</view>
+            </view>
+        </view>
+        <view class="mod-my-works">
+            <view class="mod-my-works-head">
+                <text>TA的作品</text>
+                <view class="mod-works-more">更多</view>
+            </view>
+            <view class="mod-my-works-list">
+                <view  wx:for="{{ videos }}" wx:key="index" class="mod-my-works-li">
+                    <image class="mod-my-work-img" src="{{ item }}" mode="aspectFill"/>
+                </view>
+            </view>
+        </view>
+        <button class="contact" bindtap="getCall">联系TA</button>
+    </view>

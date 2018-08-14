@@ -1,0 +1,56 @@
+
+    <view class="mod-pet-card">
+        <view class="mod-my-card">
+            <view class="mod-my-bg"/>
+            <view class="mod-my-intro">
+                <view class="row-my-info">
+                    <view class="column-my-base">
+                        <view class="mod-my-center-wrap">
+                            <image class="mod-my-photo" mode="aspectFill" src="http://qnm.hunliji.com/o_1aj420kfj1b7tqgkjmphha10itr.jpg"/>
+                        </view>
+                        <view class="mod-my-nickname">Jay</view>
+                        <view class="star">
+                            <view class="icon-star"/>
+                            <view class="icon-star"/>
+                            <view class="icon-star"/>
+                            <view class="icon-star"/>
+                            <view class="icon-star"/>
+                        </view>
+                        <view class="mod-my-pet-status">
+                            <text>100元/小时</text>
+                            <text>400元/天</text>
+                            <text>北京</text>
+                        </view>
+                        <view class="mod-pet-desc">这里是简介</view>
+                    </view>
+                </view>
+                <view class="row row-my-sum">
+                    <view class="column column-my-sum column-split">
+                        <text class="mod-my-sum-val">500</text>
+                        <text class="mod-my-sum-name">被关注</text>
+                    </view>
+                    <view class="column column-my-sum column-split">
+                        <text class="mod-my-sum-val">2010</text>
+                        <text class="mod-my-sum-name">订单量</text>
+                    </view>
+                    <view class="column column-my-sum">
+                        <text class="mod-my-sum-val">100</text>
+                        <text class="mod-my-sum-name">被点赞</text>
+                    </view>
+                </view>
+                <view bindtap="onSenseHandler" class="row row-my-upload">关注他</view>
+            </view>
+        </view>
+        <view class="mod-my-works">
+            <view class="mod-my-works-head">
+                <text>TA的作品</text>
+                <view class="mod-works-more">更多</view>
+            </view>
+            <view class="mod-my-works-list">
+                <view  wx:for="{{ videos }}" wx:key="index" class="mod-my-works-li">
+                    <image class="mod-my-work-img" src="{{ item }}" mode="aspectFill"/>
+                </view>
+            </view>
+        </view>
+        <button class="contact" bindtap="getCall">联系TA</button>
+    </view>
