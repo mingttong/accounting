@@ -1,0 +1,287 @@
+<template>
+    <view
+        class="container"
+        bindtouchmove="handleTouchMove"
+        bindtouchend="handleTouchEnd">
+        <image
+            wx:if="{{ oriTmpSrc }}"
+            class="img-back"
+            style="width:{{baseW}}px;height:{{baseH}}px;transform:rotate({{rotate}}deg) translate({{imgLeft}}px,{{imgTop}}px);scale({{scale}})"
+            src="{{ oriTmpSrc }}"
+            bindtouchstart="handleTouchStart"></image>
+        <canvas
+            class="my-canvas"
+            canvas-id="myCanvas"
+            style="width:{{baseW}}px;height:{{baseH}}px;margin-top:{{imgTop}}px;transform:rotate({{rotate}}deg);"></canvas>
+
+        <view class="options">
+            <view class="btn-opt flex-end" bindtap="handleUpload">上传</view>
+            <view class="btn-opt">还原</view>
+            <view class="btn-opt" bindtap="handleRotate">旋转</view>
+            <view class="btn-opt flex-end">裁剪</view>
+        </view>
+    </view>
+</template>
+
+<script>
+/* eslint no-underscore-dangle: 0 */
+import wepy from 'wepy';
+import mixin from '../mixins';
+import clipHelper, { promisify, getThrottle, getFixed } from './clipHelper';
+
+const throttle = getThrottle(20);
+const rotateThrottle = getThrottle(100);
+const moveRatio = 0.9; // 移动的比例
+const scaleMax = 3;
+
+let startX = null;
+let startY = null;
+let startPosition = null;
+
+export default class Index extends wepy.page {
+    data = {
+        oriSrc: '#', // 图片源地址
+        oriTmpSrc: '', // 源本地路径
+        resultSrc: '', // 处理后的地址
+
+        // 源图片尺寸
+        oriImgW: 0,
+        oriImgH: 0,
+
+        rotate: 0, // 图片旋转角度
+        scale: 1, // 缩放
+        aspectRatio: 0, // 宽高比
+
+        baseW: 0,
+        baseH: 0,
+        imgTop: 0,
+        imgLeft: 0,
+
+        winH: 0,
+        winW: 0,
+
+        ctx: null, // canvas
+
+        // 操作相关
+        startX: null,
+        startY: null,
+    };
+    config = {
+        navigationBarTitleText: '图片裁剪',
+        backgroundColor: '#fff',
+    };
+    components = {};
+    mixins = [mixin];
+    onLoad() {
+        let url = null;
+        // 宽度超过屏幕的图片
+        // 长度超过屏幕的图片
+        // 平头哥：方形图
+        url = 'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1539953721144&di=f89cc8053fb4a4cad9b85f19c1826505&imgtype=0&src=http%3A%2F%2Fp2.qhimgs4.com%2Ft018d869a2921af105b.jpg';
+        // 平头哥：横图
+        url = 'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1539953685551&di=91749e3a5665d858fa87e622f3a0377c&imgtype=0&src=http%3A%2F%2Fp0.qhimgs4.com%2Ft01c5d5dd72e214ceb6.jpg';
+        // airdrop没关：竖图
+        // url = 'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1539953606149&di=5b120ed5ebf52cfb0702f50105f2a876&imgtype=0&src=http%3A%2F%2Fwx4.sinaimg.cn%2Flarge%2F994b6f2egy1fsym7cwv2hj207u0avgm8.jpg';
+        this.init({
+            url,
+        });
+    }
+
+    async init(opt) {
+        try {
+            const {
+                url,
+            } = opt;
+
+            this.oriSrc = url;
+            wx.showLoading();
+            await this.loadImageInfo(url);
+            this.initCanvas();
+            wx.hideLoading();
+            this.$apply();
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
+    initCanvas() {
+        const ctx = wx.createCanvasContext('myCanvas');
+        this.ctx = ctx;
+        this.$apply();
+        this.updateCanvas();
+    }
+
+    updateCanvas() {
+        if (this.oriTmpSrc) {
+            this.ctx.drawImage(
+                this.oriTmpSrc, // imageResource
+                0, // 图像的左上角在目标 canvas 上 x 轴的位置 ===> 这两个都应该居中
+                0, // 图像的左上角在目标 canvas 上 y 轴的位置
+                this.baseW, // 在目标画布上绘制图像的宽度
+                this.baseH, // 在目标画布上绘制图像的高度
+                // 0, // 源图像的矩形选择框的左上角 x 坐标
+                // 0, // 源图像的矩形选择框的左上角 y 坐标
+                // , // 源图像的矩形选择框的宽度
+                // , // 源图像的矩形选择框的高度
+            );
+            this.ctx.draw();
+        }
+    }
+
+    // 获取网络图片的本地地址
+    async loadImageInfo(url) {
+        if (!url) {
+            throw new Error('请填写图片路径！');
+        }
+        const imageInfo = await promisify(wx.getImageInfo)({ src: url });
+        let { width: baseW, height: baseH } = imageInfo;
+        const { path } = imageInfo;
+        const { windowWidth: winW, windowHeight: winH } = wx.getSystemInfoSync();
+        const aspectRatio = baseW / baseH;
+
+        // 保存源图片尺寸
+        this.oriImgW = baseW;
+        this.oriImgH = baseH;
+
+        if (aspectRatio > 1) {
+            // 横图
+            // 设置image宽高
+            baseW = baseW < winW ? baseW : winW; // 处理图片过宽的情况
+            baseH = baseW / aspectRatio;
+        } else {
+            // 竖图
+            baseH = baseH < winH ? baseH : winH; // 处理图片过长的情况
+            baseW = baseH * aspectRatio;
+        }
+
+        this.baseW = baseW;
+        this.baseH = baseH;
+        this.oriTmpSrc = path;
+        // 设置上下间距
+        this.winH = winH;
+        this.winW = winW;
+        this.imgTop = ((winH - baseH) / 2) * 0.6; // 上间距乘上黄金比例，完美
+        this.aspectRatio = aspectRatio;
+        this.$apply();
+    }
+
+    __oneTouchStart({ clientX, clientY }) {
+        startX = clientX;
+        startY = clientY;
+        startPosition = {
+            x: this.imgLeft,
+            y: this.imgTop,
+        };
+    }
+
+    __oneTouchMove({ clientX, clientY }) {
+        if (startPosition !== null) {
+            const deltaX = getFixed((clientX - startX) * moveRatio, 1);
+            const deltaY = getFixed((clientY - startY) * moveRatio, 1);
+            this.imgLeft = getFixed(startPosition.x + deltaX, 1);
+            this.imgTop = getFixed(startPosition.y + deltaY, 1);
+        }
+    }
+
+    __oneTouchEnd() {
+        startPosition = null;
+    }
+
+    __twoTouchStart() {
+
+    }
+
+    __twoTouchMove() {
+        
+    }
+
+    __twoTouchEnd() {
+
+    }
+
+    methods = {
+        handleComplete() {
+            clipHelper(this.resultPath);
+        },
+
+        handleRotate() {
+            rotateThrottle(async () => {
+                try {
+                    this.rotate = this.rotate + 90;
+                    this.$apply();
+                } catch (err) {
+                    console.log(err);
+                }
+            });
+        },
+
+        handleTouchStart({ touches }) {
+            if (touches.length === 1) {
+                this.__oneTouchStart(touches[0]);
+            }
+
+            if (touches.length >= 2) {
+                this.__twoTouchStart(touches[0], touches[1]);
+            }
+        },
+
+        handleTouchMove({ touches }) {
+            throttle(() => {
+                if (touches.length === 1) {
+                    this.__oneTouchMove(touches[0]);
+                }
+
+                if (touches.length >= 2) {
+                    this.__twoTouchMove(touches[0], touches[1]);
+                }
+            });
+        },
+
+        handleTouchEnd() {
+            this.__oneTouchEnd();
+            // 记录下移动的位置
+        },
+    }
+}
+</script>
+
+<style lang="scss">
+view {
+    box-sizing: border-box;
+}
+
+.container {
+    background-color: #000;
+    min-height: 100vh;
+    overflow: hidden;
+}
+
+.my-canvas {
+    transition: transform .5s;
+    display: none;
+}
+
+.img-back {
+    position: fixed;
+    top: 0;
+}
+.img-transition {
+    transition: transform .5s;
+}
+
+.options {
+    width: 100%;
+    height: 176rpx;
+    display: flex;
+    padding: 0 40rpx 40rpx;
+    justify-content: space-between;
+    position: fixed;
+    bottom: 0;
+
+    font-size: 34rpx;
+    color: #fff;
+}
+.btn-opt.flex-end {
+    align-self: flex-end;
+}
+</style>
