@@ -629,7 +629,7 @@
             return self
         };
 
-        self.pushOrign = function(src) {
+        self.pushOrigin = function(src) {
             self.src = src;
 
             isFunction(self.onBeforeImageLoad) && self.onBeforeImageLoad(self.ctx, self);
@@ -637,18 +637,18 @@
             wx.getImageInfo({
                 src: src,
                 success: function success(res) {
-                    var innerAspectRadio = res.width / res.height;
+                    var innerAspectRatio = res.width / res.height;
 
                     self.croperTarget = res.path;
 
-                    if (innerAspectRadio < width / height) {
+                    if (innerAspectRatio < width / height) {
                         self.rectX = x;
                         self.baseWidth = width;
-                        self.baseHeight = width / innerAspectRadio;
-                        self.rectY = y - Math.abs((height - self.baseHeight) / 2);
+                        self.baseHeight = width / innerAspectRatio;
+                        self.rectY = (y - Math.abs((height - self.baseHeight) / 2));
                     } else {
                         self.rectY = y;
-                        self.baseWidth = height * innerAspectRadio;
+                        self.baseWidth = height * innerAspectRatio;
                         self.baseHeight = height;
                         self.rectX = x - Math.abs((width - self.baseWidth) / 2);
                     }
@@ -694,11 +694,28 @@
                     var quality = ref.quality;
                     if (quality === void 0) quality = 10;
 
+                    /**
+                     * @author mingttong
+                     */
+                    if (ref.width) {
+                        width = ref.width;
+                    }
+                    if (ref.height) {
+                        height = ref.height;
+                    }
+                    if (ref.x) {
+                        x = ref.x;
+                    }
+                    if (ref.y) {
+                        y = ref.y;
+                    }
+
                     if (typeof(quality) !== 'number') {
                         console.error(("quality：" + quality + " is invalid"));
                     } else if (quality < 0 || quality > 10) {
                         console.error("quality should be ranged in 0 ~ 10");
                     }
+                    console.log(x, y);
                     wx.canvasToTempFilePath({
                         canvasId: id,
                         x: x,
@@ -913,33 +930,57 @@
          */
         self.setBoundStyle = function(ref) {
             if (ref === void 0) ref = {};
-            var color = ref.color;
+            /**
+             * @author mingttong
+             */
+            var color = self.color;
             if (color === void 0) color = '#04b00f';
-            var mask = ref.mask;
+            var mask = self.mask;
             if (mask === void 0) mask = 'rgba(0, 0, 0, 0.3)';
-            var lineWidth = ref.lineWidth;
+            var lineWidth = self.lineWidth;
             if (lineWidth === void 0) lineWidth = 1;
 
-            var boundOption = [{
-                    start: { x: x - lineWidth, y: y + 10 - lineWidth },
-                    step1: { x: x - lineWidth, y: y - lineWidth },
-                    step2: { x: x + 10 - lineWidth, y: y - lineWidth }
-                },
-                {
-                    start: { x: x - lineWidth, y: y + height - 10 + lineWidth },
-                    step1: { x: x - lineWidth, y: y + height + lineWidth },
-                    step2: { x: x + 10 - lineWidth, y: y + height + lineWidth }
-                },
-                {
-                    start: { x: x + width - 10 + lineWidth, y: y - lineWidth },
-                    step1: { x: x + width + lineWidth, y: y - lineWidth },
-                    step2: { x: x + width + lineWidth, y: y + 10 - lineWidth }
-                },
-                {
-                    start: { x: x + width + lineWidth, y: y + height - 10 + lineWidth },
-                    step1: { x: x + width + lineWidth, y: y + height + lineWidth },
-                    step2: { x: x + width - 10 + lineWidth, y: y + height + lineWidth }
-                }
+            // 自由裁剪的样式
+            // var boundOption = [{
+            //         start: { x: x - lineWidth, y: y + 10 - lineWidth },
+            //         step1: { x: x - lineWidth, y: y - lineWidth },
+            //         step2: { x: x + 10 - lineWidth, y: y - lineWidth }
+            //     },
+            //     {
+            //         start: { x: x - lineWidth, y: y + height - 10 + lineWidth },
+            //         step1: { x: x - lineWidth, y: y + height + lineWidth },
+            //         step2: { x: x + 10 - lineWidth, y: y + height + lineWidth }
+            //     },
+            //     {
+            //         start: { x: x + width - 10 + lineWidth, y: y - lineWidth },
+            //         step1: { x: x + width + lineWidth, y: y - lineWidth },
+            //         step2: { x: x + width + lineWidth, y: y + 10 - lineWidth }
+            //     },
+            //     {
+            //         start: { x: x + width + lineWidth, y: y + height - 10 + lineWidth },
+            //         step1: { x: x + width + lineWidth, y: y + height + lineWidth },
+            //         step2: { x: x + width - 10 + lineWidth, y: y + height + lineWidth }
+            //     }
+            // ];
+
+            // 比例裁剪的样式
+            var boundOption = [
+                [
+                    { x, y },
+                    { x: x + width, y },
+                ],
+                [
+                    { x: x + width, y },
+                    { x: x + width, y: y + height },
+                ],
+                [
+                    { x: x + width, y: y + height },
+                    { x, y: y + height },
+                ],
+                [
+                    { x, y: y + height },
+                    { x, y},
+                ],
             ];
 
             // 绘制半透明层
@@ -955,12 +996,61 @@
                 self.ctx.beginPath();
                 self.ctx.setStrokeStyle(color);
                 self.ctx.setLineWidth(lineWidth);
-                self.ctx.moveTo(op.start.x, op.start.y);
-                self.ctx.lineTo(op.step1.x, op.step1.y);
-                self.ctx.lineTo(op.step2.x, op.step2.y);
+                op.forEach((pos, i) => {
+                    if (i === 0) {
+                        self.ctx.moveTo(pos.x, pos.y);
+                    }
+                    self.ctx.lineTo(pos.x, pos.y);
+                });
                 self.ctx.stroke();
             });
         };
+    }
+
+    /**
+     * @author mingttong
+     * @param {number} deg 角度
+     */
+    function rotate(deg) {
+        var self = this;
+        // self.ctx.beginPath();
+        // self.ctx.setStrokeStyle('#fff');
+        // self.ctx.setLineWidth(2);
+        // self.ctx.moveTo(self.rectX, self.rectY);
+        // self.ctx.lineTo(self.rectX + 200, self.rectY);
+        // self.ctx.stroke();
+        // self.ctx.draw(true);
+        // self.ctx.save();
+        // console.log(self);
+        // self.ctx.clearRect(0, 0, self.width, self.height);
+        self.ctx.save();
+        self.ctx.translate(self.rectX + self.scaleWidth / 2, self.rectY + self.scaleHeight / 2);
+        self.ctx.rotate(deg * Math.PI / 180);
+        self.ctx.drawImage(self.croperTarget, -self.scaleWidth / 2, -self.scaleHeight / 2, self.scaleWidth, self.scaleHeight);
+        self.ctx.restore();
+        self.ctx.draw(true);
+
+        self.ctx.beginPath();
+        self.ctx.setStrokeStyle('#fff');
+        self.ctx.setLineWidth(2);
+        self.ctx.moveTo(self.rectX + (self.scaleWidth - self.scaleHeight) / 2, self.rectY + (self.scaleHeight - self.scaleWidth) / 2);
+        self.ctx.lineTo(self.rectX + (self.scaleWidth - self.scaleHeight) / 2 + self.scaleHeight, self.rectY + (self.scaleHeight - self.scaleWidth) / 2);
+        self.ctx.stroke();
+        self.ctx.draw(true);
+        self.ctx.save();
+
+        self.getCropperImage({
+            quality: 10,
+            x: self.rectX + (self.scaleWidth - self.scaleHeight) / 2,
+            y: self.rectY + (self.scaleHeight - self.scaleWidth) / 2,
+            width: self.scaleHeight,
+            height: self.scaleWidth,
+        }, src => {
+            wx.previewImage({
+                current: '', // 当前显示图片的http链接
+                urls: [src] // 需要预览的图片http链接列表
+            });
+        });
     }
 
     var version = "1.2.0";
@@ -997,7 +1087,7 @@
         typeof self.onReady === 'function' && self.onReady(self.ctx, self);
 
         if (src) {
-            self.pushOrign(src);
+            self.pushOrigin(src);
         }
         setTouchState(self, false, false, false);
 
@@ -1014,6 +1104,10 @@
     WeCropper.prototype.methods = methods;
     WeCropper.prototype.cutt = cut;
     WeCropper.prototype.update = update;
+    /**
+     * @author mingttong
+     */
+    WeCropper.prototype.rotate = rotate;
 
     return WeCropper;
 

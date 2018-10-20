@@ -1,18 +1,12 @@
 <template>
     <view
-        class="container"
-        bindtouchmove="handleTouchMove"
-        bindtouchend="handleTouchEnd">
-        <image
-            wx:if="{{ oriTmpSrc }}"
-            class="img-back"
-            style="width:{{baseW}}px;height:{{baseH}}px;transform:rotate({{rotate}}deg) translate({{imgLeft}}px,{{imgTop}}px);scale({{scale}})"
-            src="{{ oriTmpSrc }}"
-            bindtouchstart="handleTouchStart"></image>
+        class="container">
         <canvas
-            class="my-canvas"
-            canvas-id="myCanvas"
-            style="width:{{baseW}}px;height:{{baseH}}px;margin-top:{{imgTop}}px;transform:rotate({{rotate}}deg);"></canvas>
+            canvas-id="cropper"
+            style="width:{{cropperOpt.width}}px;height:{{cropperOpt.height}}px;"
+            bindtouchstart="handleTouchStart"
+            bindtouchmove="handleTouchMove"
+            bindtouchend="handleTouchEnd"></canvas>
 
         <view class="options">
             <view class="btn-opt flex-end" bindtap="handleUpload">上传</view>
@@ -28,43 +22,34 @@
 import wepy from 'wepy';
 import mixin from '../mixins';
 import clipHelper, { promisify, getThrottle, getFixed } from './clipHelper';
+import WeCropper from './we-cropper';
 
-const throttle = getThrottle(20);
-const rotateThrottle = getThrottle(100);
-const moveRatio = 0.9; // 移动的比例
-const scaleMax = 3;
-
-let startX = null;
-let startY = null;
-let startPosition = null;
+const device = wx.getSystemInfoSync();
+const { windowWidth: deviceW } = device;
+const deviceH = device.windowHeight - 88;
+const cutWidth = deviceW * 0.9;
+const cutAspectRatio = 16 / 4;
 
 export default class Index extends wepy.page {
     data = {
-        oriSrc: '#', // 图片源地址
-        oriTmpSrc: '', // 源本地路径
-        resultSrc: '', // 处理后的地址
-
-        // 源图片尺寸
-        oriImgW: 0,
-        oriImgH: 0,
-
-        rotate: 0, // 图片旋转角度
-        scale: 1, // 缩放
-        aspectRatio: 0, // 宽高比
-
-        baseW: 0,
-        baseH: 0,
-        imgTop: 0,
-        imgLeft: 0,
-
-        winH: 0,
-        winW: 0,
-
-        ctx: null, // canvas
-
-        // 操作相关
-        startX: null,
-        startY: null,
+        cropperOpt: {
+            id: 'cropper',
+            width: deviceW,  // 画布宽度
+            height: deviceH, // 画布高度
+            scale: 2.5, // 最大缩放倍数
+            zoom: 8, // 缩放系数
+            cut: {
+                x: (deviceW - cutWidth) / 2, // 裁剪框x轴起点
+                y: ((deviceH - (cutWidth / cutAspectRatio)) / 2), // 裁剪框y轴期起点
+                width: cutWidth,
+                height: cutWidth / cutAspectRatio,
+            },
+            mask: 'rgba(0, 0, 0, 0.8)',
+            color: '#fff',
+            lineWidth: 1,
+        },
+        wecropper: null,
+        deg: 0,
     };
     config = {
         navigationBarTitleText: '图片裁剪',
@@ -82,164 +67,34 @@ export default class Index extends wepy.page {
         url = 'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1539953685551&di=91749e3a5665d858fa87e622f3a0377c&imgtype=0&src=http%3A%2F%2Fp0.qhimgs4.com%2Ft01c5d5dd72e214ceb6.jpg';
         // airdrop没关：竖图
         // url = 'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1539953606149&di=5b120ed5ebf52cfb0702f50105f2a876&imgtype=0&src=http%3A%2F%2Fwx4.sinaimg.cn%2Flarge%2F994b6f2egy1fsym7cwv2hj207u0avgm8.jpg';
-        this.init({
-            url,
-        });
-    }
 
-    async init(opt) {
-        try {
-            const {
-                url,
-            } = opt;
+        const { cropperOpt } = this.data;
 
-            this.oriSrc = url;
-            wx.showLoading();
-            await this.loadImageInfo(url);
-            this.initCanvas();
-            wx.hideLoading();
-            this.$apply();
-        } catch (err) {
-            console.log(err);
-        }
-    }
-
-    initCanvas() {
-        const ctx = wx.createCanvasContext('myCanvas');
-        this.ctx = ctx;
-        this.$apply();
-        this.updateCanvas();
-    }
-
-    updateCanvas() {
-        if (this.oriTmpSrc) {
-            this.ctx.drawImage(
-                this.oriTmpSrc, // imageResource
-                0, // 图像的左上角在目标 canvas 上 x 轴的位置 ===> 这两个都应该居中
-                0, // 图像的左上角在目标 canvas 上 y 轴的位置
-                this.baseW, // 在目标画布上绘制图像的宽度
-                this.baseH, // 在目标画布上绘制图像的高度
-                // 0, // 源图像的矩形选择框的左上角 x 坐标
-                // 0, // 源图像的矩形选择框的左上角 y 坐标
-                // , // 源图像的矩形选择框的宽度
-                // , // 源图像的矩形选择框的高度
-            );
-            this.ctx.draw();
-        }
-    }
-
-    // 获取网络图片的本地地址
-    async loadImageInfo(url) {
-        if (!url) {
-            throw new Error('请填写图片路径！');
-        }
-        const imageInfo = await promisify(wx.getImageInfo)({ src: url });
-        let { width: baseW, height: baseH } = imageInfo;
-        const { path } = imageInfo;
-        const { windowWidth: winW, windowHeight: winH } = wx.getSystemInfoSync();
-        const aspectRatio = baseW / baseH;
-
-        // 保存源图片尺寸
-        this.oriImgW = baseW;
-        this.oriImgH = baseH;
-
-        if (aspectRatio > 1) {
-            // 横图
-            // 设置image宽高
-            baseW = baseW < winW ? baseW : winW; // 处理图片过宽的情况
-            baseH = baseW / aspectRatio;
-        } else {
-            // 竖图
-            baseH = baseH < winH ? baseH : winH; // 处理图片过长的情况
-            baseW = baseH * aspectRatio;
-        }
-
-        this.baseW = baseW;
-        this.baseH = baseH;
-        this.oriTmpSrc = path;
-        // 设置上下间距
-        this.winH = winH;
-        this.winW = winW;
-        this.imgTop = ((winH - baseH) / 2) * 0.6; // 上间距乘上黄金比例，完美
-        this.aspectRatio = aspectRatio;
-        this.$apply();
-    }
-
-    __oneTouchStart({ clientX, clientY }) {
-        startX = clientX;
-        startY = clientY;
-        startPosition = {
-            x: this.imgLeft,
-            y: this.imgTop,
-        };
-    }
-
-    __oneTouchMove({ clientX, clientY }) {
-        if (startPosition !== null) {
-            const deltaX = getFixed((clientX - startX) * moveRatio, 1);
-            const deltaY = getFixed((clientY - startY) * moveRatio, 1);
-            this.imgLeft = getFixed(startPosition.x + deltaX, 1);
-            this.imgTop = getFixed(startPosition.y + deltaY, 1);
-        }
-    }
-
-    __oneTouchEnd() {
-        startPosition = null;
-    }
-
-    __twoTouchStart() {
-
-    }
-
-    __twoTouchMove() {
-        
-    }
-
-    __twoTouchEnd() {
-
+        this.wecropper = new WeCropper(cropperOpt)
+            .on('beforeImageLoad', () => {
+                wx.showLoading();
+            })
+            .on('imageLoad', () => {
+                wx.hideLoading();
+            });
+        this.wecropper.pushOrigin(url);
     }
 
     methods = {
         handleComplete() {
             clipHelper(this.resultPath);
         },
-
+        handleTouchStart(e) {
+            this.wecropper.touchStart(e);
+        },
+        handleTouchMove(e) {
+            this.wecropper.touchMove(e);
+        },
+        handleTouchEnd(e) {
+            this.wecropper.touchEnd(e);
+        },
         handleRotate() {
-            rotateThrottle(async () => {
-                try {
-                    this.rotate = this.rotate + 90;
-                    this.$apply();
-                } catch (err) {
-                    console.log(err);
-                }
-            });
-        },
-
-        handleTouchStart({ touches }) {
-            if (touches.length === 1) {
-                this.__oneTouchStart(touches[0]);
-            }
-
-            if (touches.length >= 2) {
-                this.__twoTouchStart(touches[0], touches[1]);
-            }
-        },
-
-        handleTouchMove({ touches }) {
-            throttle(() => {
-                if (touches.length === 1) {
-                    this.__oneTouchMove(touches[0]);
-                }
-
-                if (touches.length >= 2) {
-                    this.__twoTouchMove(touches[0], touches[1]);
-                }
-            });
-        },
-
-        handleTouchEnd() {
-            this.__oneTouchEnd();
-            // 记录下移动的位置
+            this.wecropper.rotate(this.deg += 90);
         },
     }
 }
@@ -254,19 +109,6 @@ view {
     background-color: #000;
     min-height: 100vh;
     overflow: hidden;
-}
-
-.my-canvas {
-    transition: transform .5s;
-    display: none;
-}
-
-.img-back {
-    position: fixed;
-    top: 0;
-}
-.img-transition {
-    transition: transform .5s;
 }
 
 .options {
