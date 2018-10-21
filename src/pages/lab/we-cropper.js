@@ -1031,10 +1031,19 @@
         self.ctx.draw(true);
 
         self.ctx.beginPath();
-        self.ctx.setStrokeStyle('#fff');
+        self.ctx.setStrokeStyle('#ff0000');
         self.ctx.setLineWidth(2);
         self.ctx.moveTo(self.rectX + (self.scaleWidth - self.scaleHeight) / 2, self.rectY + (self.scaleHeight - self.scaleWidth) / 2);
         self.ctx.lineTo(self.rectX + (self.scaleWidth - self.scaleHeight) / 2 + self.scaleHeight, self.rectY + (self.scaleHeight - self.scaleWidth) / 2);
+        self.ctx.stroke();
+        self.ctx.draw(true);
+        self.ctx.save();
+
+        self.ctx.beginPath();
+        self.ctx.setStrokeStyle('#ff0000');
+        self.ctx.setLineWidth(2);
+        self.ctx.moveTo(self.rectX + (self.scaleWidth - self.scaleHeight) / 2, self.rectY + (self.scaleHeight - self.scaleWidth) / 2 + self.scaleWidth);
+        self.ctx.lineTo(self.rectX + (self.scaleWidth - self.scaleHeight) / 2 + self.scaleHeight, self.rectY + (self.scaleHeight - self.scaleWidth) / 2 + self.scaleWidth);
         self.ctx.stroke();
         self.ctx.draw(true);
         self.ctx.save();
@@ -1046,10 +1055,12 @@
             width: self.scaleHeight,
             height: self.scaleWidth,
         }, src => {
-            wx.previewImage({
-                current: '', // 当前显示图片的http链接
-                urls: [src] // 需要预览的图片http链接列表
-            });
+            wx.getImageInfo({
+                src,
+                success(res) {
+                    console.log(res);
+                }
+            })
         });
     }
 

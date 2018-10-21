@@ -2,6 +2,7 @@
     <view class="container">
         /index.wxml
         <button @tap="handleToClip">去裁剪</button>
+        <image src="http://tmp/wxc594bc8d2f979bd4.o6zAJsx73XFN7vI_v0xNKxf2-l9E.0J6jYrZyrlDZ79ef535e50358fba8a2e2516bd347b69.png"></image>
     </view>
 </template>
 
