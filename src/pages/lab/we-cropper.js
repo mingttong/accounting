@@ -194,7 +194,7 @@
             }
         };
 
-        self.deviceRadio = windowWidth / 750;
+        self.deviceRatio = windowWidth / 750;
     }
 
     function observer() {
@@ -604,7 +604,7 @@
         var self = this;
 
         var id = self.id;
-        var deviceRadio = self.deviceRadio;
+        var deviceRatio = self.deviceRatio;
         var boundWidth = self.width; // 裁剪框默认宽度，即整个画布宽度
         var boundHeight = self.height; // 裁剪框默认高度，即整个画布高度
         var ref = self.cut;
@@ -722,8 +722,8 @@
                         y: y,
                         width: width,
                         height: height,
-                        destWidth: width * quality / (deviceRadio * 10),
-                        destHeight: height * quality / (deviceRadio * 10),
+                        destWidth: width * quality / (deviceRatio * 10),
+                        destHeight: height * quality / (deviceRatio * 10),
                         success: function success(res) {
                             isFunction(fn) && fn.call(self, res.tempFilePath);
                         },
@@ -739,8 +739,8 @@
                         y: y,
                         width: width,
                         height: height,
-                        destWidth: width / deviceRadio,
-                        destHeight: height / deviceRadio,
+                        destWidth: width / deviceRatio,
+                        destHeight: height / deviceRatio,
                         success: function success(res) {
                             isFunction(fn) && fn.call(self, res.tempFilePath);
                         },

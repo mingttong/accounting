@@ -21,7 +21,7 @@
 /* eslint no-underscore-dangle: 0 */
 import wepy from 'wepy';
 import mixin from '../mixins';
-import clipHelper, { promisify, getThrottle, getFixed } from './clipHelper';
+import clipHelper from './clipHelper';
 import WeCropper from './we-cropper';
 
 const device = wx.getSystemInfoSync();
@@ -34,7 +34,7 @@ export default class Index extends wepy.page {
     data = {
         cropperOpt: {
             id: 'cropper',
-            width: deviceW,  // 画布宽度
+            width: deviceW, // 画布宽度
             height: deviceH, // 画布高度
             scale: 2.5, // 最大缩放倍数
             zoom: 8, // 缩放系数
@@ -78,6 +78,7 @@ export default class Index extends wepy.page {
                 wx.hideLoading();
             });
         this.wecropper.pushOrigin(url);
+        console.log(this.wecropper);
     }
 
     methods = {
