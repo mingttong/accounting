@@ -3,8 +3,13 @@ import wepy from 'wepy';
 import 'wepy-async-function';
 
 export default class extends wepy.app {
+    constructor() {
+        super();
+        this.use('promisify');
+    }
     config = {
         pages: [
+            'pages/test',
             'pages/index',
             'pages/me',
             'pages/edit',
@@ -17,22 +22,22 @@ export default class extends wepy.app {
             navigationBarTitleText: '记账小程序',
             navigationBarTextStyle: 'white',
         },
-        tabBar: {
-            list: [
-                {
-                    pagePath: 'pages/index',
-                    text: '账单',
-                    iconPath: '/assets/bill.png',
-                    selectedIconPath: '/assets/bill-focus.png',
-                },
-                {
-                    pagePath: 'pages/me',
-                    text: '我的',
-                    iconPath: '/assets/me.png',
-                    selectedIconPath: '/assets/me-focus.png',
-                },
-            ],
-        },
+        // tabBar: {
+        //     list: [
+        //         {
+        //             pagePath: 'pages/index',
+        //             text: '账单',
+        //             iconPath: '/assets/bill.png',
+        //             selectedIconPath: '/assets/bill-focus.png',
+        //         },
+        //         {
+        //             pagePath: 'pages/me',
+        //             text: '我的',
+        //             iconPath: '/assets/me.png',
+        //             selectedIconPath: '/assets/me-focus.png',
+        //         },
+        //     ],
+        // },
     }
 
     onLaunch() {

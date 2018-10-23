@@ -1,0 +1,19 @@
+<template>
+    <navigator url="/pages/index">点我查看</navigator>
+</template>
+
+<script>
+import wepy from 'wepy';
+
+export default class Index extends wepy.page {
+    data = {
+    };
+    config = {
+        backgroundColor: '#EEEEEE',
+    };
+    onLoad() {}
+}
+</script>
+
+<style lang="scss">
+</style>
