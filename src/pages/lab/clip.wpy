@@ -12,7 +12,7 @@
             <view class="btn-opt flex-end" bindtap="handleUpload">上传</view>
             <view class="btn-opt">还原</view>
             <view class="btn-opt" bindtap="handleRotate">旋转</view>
-            <view class="btn-opt flex-end">裁剪</view>
+            <view class="btn-opt flex-end" bindtap="handleClip">裁剪</view>
         </view>
     </view>
 </template>
@@ -22,13 +22,14 @@
 import wepy from 'wepy';
 import mixin from '../mixins';
 import clipHelper from './clipHelper';
-import WeCropper from './we-cropper';
+// import WeCropper from './we-cropper';
+import WeCropper from './mtt-cropper';
 
 const device = wx.getSystemInfoSync();
 const { windowWidth: deviceW } = device;
-const deviceH = device.windowHeight - 88;
+const deviceH = device.windowHeight;
 const cutWidth = deviceW * 0.9;
-const cutAspectRatio = 16 / 4;
+const cutAspectRatio = 4 / 3;
 
 export default class Index extends wepy.page {
     data = {
@@ -66,7 +67,7 @@ export default class Index extends wepy.page {
         // 平头哥：横图
         url = 'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1539953685551&di=91749e3a5665d858fa87e622f3a0377c&imgtype=0&src=http%3A%2F%2Fp0.qhimgs4.com%2Ft01c5d5dd72e214ceb6.jpg';
         // airdrop没关：竖图
-        // url = 'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1539953606149&di=5b120ed5ebf52cfb0702f50105f2a876&imgtype=0&src=http%3A%2F%2Fwx4.sinaimg.cn%2Flarge%2F994b6f2egy1fsym7cwv2hj207u0avgm8.jpg';
+        url = 'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1540379092339&di=b460c53b655a638a48415b3e350a883a&imgtype=0&src=http%3A%2F%2Fimg5.duitang.com%2Fuploads%2Fitem%2F201405%2F31%2F20140531174123_zCPNY.thumb.700_0.jpeg';
 
         const { cropperOpt } = this.data;
 
@@ -78,10 +79,17 @@ export default class Index extends wepy.page {
                 wx.hideLoading();
             });
         this.wecropper.pushOrigin(url);
-        console.log(this.wecropper);
     }
 
     methods = {
+        handleUpload() {
+            wx.chooseImage({
+                success: ({ tempFilePaths }) => {
+                    const path = tempFilePaths[0];
+                    this.wecropper.pushOrigin(path);
+                },
+            });
+        },
         handleComplete() {
             clipHelper(this.resultPath);
         },
@@ -95,7 +103,14 @@ export default class Index extends wepy.page {
             this.wecropper.touchEnd(e);
         },
         handleRotate() {
-            this.wecropper.rotate(this.deg += 90);
+            this.wecropper.rotate(90);
+        },
+        handleClip() {
+            this.wecropper.getCropperImage(src => {
+                wx.previewImage({
+                    urls: [src],
+                });
+            });
         },
     }
 }

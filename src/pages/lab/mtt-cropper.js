@@ -32,14 +32,14 @@ const getNewScale = (oldScale, oldDistance, zoom, touch0, touch1) => {
     return oldScale + (0.001 * (zoom * (newDistance - oldDistance)));
 };
 
+const TOUCH_STATE = ['touchstarted', 'touchmoved', 'touchended'];
 const setTouchState = (instance, ...args) => {
-
-    TOUCH_STATE.forEach(function(key, i) {
-        if (arg[i] !== undefined) {
+    TOUCH_STATE.forEach((key, i) => {
+        if (args[i] !== undefined) {
             instance[key] = args[i];
         }
     });
-}
+};
 
 const tmp = {};
 const DEFAULT = {
@@ -205,6 +205,7 @@ export default class Cropper {
         const ref = getDevice();
         const { windowWidth } = ref;
         this.deviceRatio = windowWidth / 750;
+        this.totalDeg = 0; // 总共旋转的角度
     }
 
     attachPage() {
@@ -321,6 +322,40 @@ export default class Cropper {
         this.rectY = this.imgTop;
     }
 
+    touchStart({ touches }) {
+        const [touch0, touch1] = touches;
+
+        setTouchState(this, true, null, null);
+
+        // 计算第一个触摸点的位置，并参照改点进行缩放
+        this[oneTouchStart](touch0);
+
+        // 两指手势触发
+        if (touches.length >= 2) {
+            this[twoTouchStart](touch0, touch1);
+        }
+    }
+
+    touchMove({ touches }) {
+        const [touch0, touch1] = touches;
+
+        setTouchState(this, null, true);
+
+        // 单指手势时触发
+        if (touches.length === 1) {
+            this[oneTouchMove](touch0);
+        }
+        // 两指手势触发
+        if (touches.length >= 2) {
+            this[twoTouchMove](touch0, touch1);
+        }
+    }
+
+    touchEnd() {
+        setTouchState(this, false, false, true);
+        this[xtouchEnd]();
+    }
+
     /**
      * 设置边界
      * @param imgLeft 图片左上角横坐标值
@@ -378,8 +413,8 @@ export default class Cropper {
         const {
             x = 0,
             y = 0,
-            width = boundWidth,
-            height = boundHeight,
+            width = boundWidth, // 裁剪框宽度
+            height = boundHeight, // 裁剪框高度
         } = cut;
 
         const {
@@ -453,6 +488,146 @@ export default class Cropper {
         });
     }
 
+    /**
+     * @author mingttong
+     * @param {number} deg 角度
+     */
+    rotate(destDeg) {
+        // this.ctx.beginPath();
+        // this.ctx.setStrokeStyle('#fff');
+        // this.ctx.setLineWidth(2);
+        // this.ctx.moveTo(this.rectX, this.rectY);
+        // this.ctx.lineTo(this.rectX + 200, this.rectY);
+        // this.ctx.stroke();
+        // this.ctx.draw(true);
+        // this.ctx.save();
+        // console.log(this);
+        // this.ctx.clearRect(0, 0, this.width, this.height);
+
+        // this.ctx.save();
+        // this.ctx.translate(this.rectX + (this.scaleWidth / 2), this.rectY + (this.scaleHeight / 2));
+        // this.ctx.rotate(deg * (Math.PI / 180));
+        // this.ctx.drawImage(this.croperTarget, -this.scaleWidth / 2, -this.scaleHeight / 2, this.scaleWidth, this.scaleHeight);
+        // this.ctx.restore();
+        // this.ctx.draw(true);
+
+        // 过渡效果
+        // await new Promise(resolve => {
+        //     let stop = false;
+
+        //     // animating x (margin-left) from 20 to 300, for example
+        //     const startDeg = 0;
+        //     const duration = 1000;
+        //     let start = null;
+
+        //     const inOutQuad = n => {
+        //         n *= 2;
+        //         if (n < 1) return 0.5 * n * n;
+        //         return -0.5 * ((--n * (n - 2)) - 1);
+        //     };
+
+        //     const draw = (now) => {
+        //         if (stop) {
+        //             resolve();
+        //             return;
+        //         }
+        //         if (now - start >= duration) stop = true;
+        //         const p = (now - start) / duration;
+        //         const val = inOutQuad(p);
+        //         const deltaDeg = startDeg + ((destDeg - startDeg) * val);
+
+        //         this.ctx.save();
+        //         this.ctx.translate(this.rectX + (this.scaleWidth / 2), this.rectY + (this.scaleHeight / 2));
+        //         this.ctx.rotate(deltaDeg * (Math.PI / 180));
+        //         this.ctx.drawImage(this.croperTarget, -this.scaleWidth / 2, -this.scaleHeight / 2, this.scaleWidth, this.scaleHeight);
+        //         this.ctx.restore();
+        //         this.ctx.draw();
+
+        //         requestAnimationFrame(draw);
+        //     };
+        //     console.log()
+
+        //     const startAnim = (timeStamp) => {
+        //         start = timeStamp;
+        //         draw(timeStamp);
+        //     };
+
+        //     requestAnimationFrame(startAnim);
+        // });
+
+        // this.updateMultiData(this.scaleHeight / this.scaleWidth);
+
+        // 旋转前预处理
+        const w0 = this.scaleWidth;
+        const h0 = this.scaleHeight;
+        let w1 = this.scaleWidth;
+        let h1 = this.scaleHeight;
+        const x0 = this.rectX;
+        const y0 = this.rectY;
+        let y1 = this.rectY;
+        let x1 = this.rectX;
+
+        if (h0 > this.cut.width) {
+            // 旋转后若图片太宽，则等比例缩放
+            h1 = this.cut.width;
+            w1 = h1 * this.innerAspectRatio;
+            x1 = x0 + ((w0 - w1) / 2);
+            y1 = y0 + ((h0 - h1) / 2);
+        }
+
+        this.scaleWidth = w1;
+        this.scaleHeight = h1;
+        this.rectX = x1;
+        this.rectY = y1;
+
+        // 开始旋转
+        this.ctx.save();
+        this.ctx.translate(this.rectX + (this.scaleWidth / 2), this.rectY + (this.scaleHeight / 2));
+        this.ctx.rotate(destDeg * (Math.PI / 180));
+        this.ctx.drawImage(this.croperTarget, -this.scaleWidth / 2, -this.scaleHeight / 2, this.scaleWidth, this.scaleHeight);
+        this.ctx.restore();
+
+        // this.updateCanvas();
+
+        // this.updateMultiData({
+        //     width: this.scaleHeight,
+        //     height: this.scaleWidth,
+        // });
+
+        // this.setBoundStyle(); // 设置边界样式
+
+        this.ctx.draw();
+
+        // this.ctx.beginPath();
+        // this.ctx.setStrokeStyle('#ff0000');
+        // this.ctx.setLineWidth(2);
+        // this.ctx.moveTo(this.rectX + ((this.scaleWidth - this.scaleHeight) / 2), this.rectY + ((this.scaleHeight - this.scaleWidth) / 2));
+        // this.ctx.lineTo(this.rectX + ((this.scaleWidth - this.scaleHeight) / 2) + this.scaleHeight, this.rectY + ((this.scaleHeight - this.scaleWidth) / 2));
+        // this.ctx.stroke();
+        // this.ctx.draw(true);
+        // this.ctx.save();
+
+        // this.ctx.beginPath();
+        // this.ctx.setStrokeStyle('#ff0000');
+        // this.ctx.setLineWidth(2);
+        // this.ctx.moveTo(this.rectX + ((this.scaleWidth - this.scaleHeight) / 2), this.rectY + ((this.scaleHeight - this.scaleWidth) / 2) + this.scaleWidth);
+        // this.ctx.lineTo(this.rectX + ((this.scaleWidth - this.scaleHeight) / 2) + this.scaleHeight, this.rectY + ((this.scaleHeight - this.scaleWidth) / 2) + this.scaleWidth);
+        // this.ctx.stroke();
+        // this.ctx.draw(true);
+        // this.ctx.save();
+
+        this.getCropperImage({
+            quality: 10,
+            x: this.rectX + ((this.scaleWidth - this.scaleHeight) / 2),
+            y: this.rectY + ((this.scaleHeight - this.scaleWidth) / 2),
+            width: this.scaleHeight,
+            height: this.scaleWidth,
+        }, src => {
+            this.totalDeg += destDeg;
+            this.pushOrigin(src);
+        });
+    }
+
     updateCanvas() {
         if (this.croperTarget) {
             //  画布绘制图片
@@ -462,6 +637,8 @@ export default class Cropper {
                 this.imgTop,
                 this.scaleWidth,
                 this.scaleHeight,
+                0,
+                0,
             );
         }
         isFunction(this.onBeforeDraw) && this.onBeforeDraw(this.ctx, this);
@@ -472,6 +649,31 @@ export default class Cropper {
     }
 
     pushOrigin(src) {
+        this.src = src;
+
+        isFunction(this.onBeforeImageLoad) && this.onBeforeImageLoad(this.ctx, this);
+
+        // TODO: 转为Promise
+        wx.getImageInfo({
+            src,
+            success: res => {
+                this.imageInfo = res;
+                this.croperTarget = res.path;
+                this.updateMultiData(res.width / res.height);
+
+                isFunction(this.onImageLoad) && this.onImageLoad(this.ctx, this);
+            },
+        });
+
+        return this;
+    }
+
+    getImageInfo() {
+        return this.imageInfo;
+    }
+
+    // 更新各种数据
+    updateMultiData(innerAspectRatio) {
         const {
             width: boundWidth, // 裁剪框默认宽度，即整个画布宽度
             height: boundHeight, // 裁剪框默认高度，即整个画布高度
@@ -485,45 +687,29 @@ export default class Cropper {
             height = boundHeight,
         } = cut;
 
-        this.src = src;
+        this.innerAspectRatio = innerAspectRatio;
 
-        isFunction(this.onBeforeImageLoad) && this.onBeforeImageLoad(this.ctx, this);
+        if (innerAspectRatio < width / height) {
+            // 裁剪框要宽一些
+            this.rectX = x;
+            this.baseWidth = width;
+            this.baseHeight = width / innerAspectRatio;
+            this.rectY = (y - Math.abs((height - this.baseHeight) / 2));
+        } else {
+            // 裁剪框要高一些
+            this.rectY = y;
+            this.baseWidth = height * innerAspectRatio;
+            this.baseHeight = height;
+            this.rectX = x - Math.abs((width - this.baseWidth) / 2);
+        }
 
-        // TODO: 转为Promise
-        wx.getImageInfo({
-            src,
-            success: res => {
-                const innerAspectRatio = res.width / res.height;
+        console.log(this.rectX, this.rectY, x, y);
+        this.imgLeft = this.rectX;
+        this.imgTop = this.rectY;
+        this.scaleWidth = this.baseWidth;
+        this.scaleHeight = this.baseHeight;
 
-                this.croperTarget = res.path;
-
-                if (innerAspectRatio < width / height) {
-                    // 裁剪框要宽一些
-                    this.rectX = x;
-                    this.baseWidth = width;
-                    this.baseHeight = width / innerAspectRatio;
-                    this.rectY = (y - Math.abs((height - this.baseHeight) / 2));
-                } else {
-                    // 裁剪框要高一些
-                    this.rectY = y;
-                    this.baseWidth = height * innerAspectRatio;
-                    this.baseHeight = height;
-                    this.rectX = x - Math.abs((width - this.baseWidth) / 2);
-                }
-
-                this.imgLeft = this.rectX;
-                this.imgTop = this.rectY;
-                this.scaleWidth = this.baseWidth;
-                this.scaleHeight = this.baseHeight;
-
-                this.updateCanvas();
-
-                isFunction(this.onImageLoad) && this.onImageLoad(this.ctx, this);
-            },
-        });
-
-        this.update();
-        return this;
+        this.updateCanvas();
     }
 
     // TODO: 稍后加上这个方法
@@ -595,6 +781,7 @@ export default class Cropper {
                 y,
                 width,
                 height,
+                quality: 1,
                 destWidth: width * quality / (deviceRatio * 10),
                 destHeight: height * quality / (deviceRatio * 10),
                 success(res) {
@@ -613,6 +800,7 @@ export default class Cropper {
                 y,
                 width,
                 height,
+                quality: 1,
                 destWidth: width / deviceRatio,
                 destHeight: height / deviceRatio,
                 success(res) {
