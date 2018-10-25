@@ -3,7 +3,7 @@
         class="container">
         <canvas
             canvas-id="cropper"
-            style="width:{{cropperOpt.width}}px;height:{{cropperOpt.height}}px;"
+            style="width:{{cropperOpt.width}}px;height:{{cropperOpt.height}}px;left:-{{(winH - winW) / 2}}px;position:fixed;"
             bindtouchstart="handleTouchStart"
             bindtouchmove="handleTouchMove"
             bindtouchend="handleTouchEnd"></canvas>
@@ -33,14 +33,16 @@ const cutAspectRatio = 4 / 3;
 
 export default class Index extends wepy.page {
     data = {
+        winH: deviceH,
+        winW: deviceW,
         cropperOpt: {
             id: 'cropper',
-            width: deviceW, // 画布宽度
+            width: deviceH, // 画布宽度
             height: deviceH, // 画布高度
             scale: 2.5, // 最大缩放倍数
             zoom: 8, // 缩放系数
             cut: {
-                x: (deviceW - cutWidth) / 2, // 裁剪框x轴起点
+                x: ((deviceH - deviceW) / 2) + ((deviceW - cutWidth) / 2), // 裁剪框x轴起点
                 y: ((deviceH - (cutWidth / cutAspectRatio)) / 2), // 裁剪框y轴期起点
                 width: cutWidth,
                 height: cutWidth / cutAspectRatio,

@@ -10,6 +10,15 @@ const getDevice = () => {
     return device;
 };
 
+const px = (n) => {
+    if (typeof n === 'undefined') return void 0;
+    if (n === 0) return 0;
+    const {
+        windowWidth,
+    } = getDevice();
+    return (n * windowWidth) / 375;
+};
+
 const firstLetterUpper = str => str.charAt(0).toUpperCase() + str.slice(1);
 
 const isFunction = obj => typeof obj === 'function';
@@ -558,33 +567,33 @@ export default class Cropper {
         // this.updateMultiData(this.scaleHeight / this.scaleWidth);
 
         // 旋转前预处理
-        const w0 = this.scaleWidth;
-        const h0 = this.scaleHeight;
-        let w1 = this.scaleWidth;
-        let h1 = this.scaleHeight;
-        const x0 = this.rectX;
-        const y0 = this.rectY;
-        let y1 = this.rectY;
-        let x1 = this.rectX;
+        // const w0 = this.scaleWidth;
+        // const h0 = this.scaleHeight;
+        // let w1 = this.scaleWidth;
+        // let h1 = this.scaleHeight;
+        // const x0 = this.rectX;
+        // const y0 = this.rectY;
+        // let y1 = this.rectY;
+        // let x1 = this.rectX;
 
-        if (h0 > this.cut.width) {
-            // 旋转后若图片太宽，则等比例缩放
-            h1 = this.cut.width;
-            w1 = h1 * this.innerAspectRatio;
-            x1 = x0 + ((w0 - w1) / 2);
-            y1 = y0 + ((h0 - h1) / 2);
-        }
+        // if (h0 > this.cut.width) {
+        //     // 旋转后若图片太宽，则等比例缩放
+        //     h1 = this.cut.width;
+        //     w1 = h1 * this.innerAspectRatio;
+        //     x1 = x0 + ((w0 - w1) / 2);
+        //     y1 = y0 + ((h0 - h1) / 2);
+        // }
 
-        this.scaleWidth = w1;
-        this.scaleHeight = h1;
-        this.rectX = x1;
-        this.rectY = y1;
+        // this.scaleWidth = w1;
+        // this.scaleHeight = h1;
+        // this.rectX = x1;
+        // this.rectY = y1;
 
         // 开始旋转
         this.ctx.save();
         this.ctx.translate(this.rectX + (this.scaleWidth / 2), this.rectY + (this.scaleHeight / 2));
         this.ctx.rotate(destDeg * (Math.PI / 180));
-        this.ctx.drawImage(this.croperTarget, -this.scaleWidth / 2, -this.scaleHeight / 2, this.scaleWidth, this.scaleHeight);
+        this.ctx.drawImage(this.croperTarget, -this.scaleWidth / 2, -this.scaleHeight / 2, px(this.scaleWidth), px(this.scaleHeight));
         this.ctx.restore();
 
         // this.updateCanvas();
@@ -624,7 +633,10 @@ export default class Cropper {
             height: this.scaleWidth,
         }, src => {
             this.totalDeg += destDeg;
-            this.pushOrigin(src);
+            wx.previewImage({
+                urls: [src],
+            });
+            // this.pushOrigin(src);
         });
     }
 
@@ -635,8 +647,8 @@ export default class Cropper {
                 this.croperTarget,
                 this.imgLeft,
                 this.imgTop,
-                this.scaleWidth,
-                this.scaleHeight,
+                px(this.scaleWidth),
+                px(this.scaleHeight),
                 0,
                 0,
             );
