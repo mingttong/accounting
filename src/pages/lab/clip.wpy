@@ -8,6 +8,12 @@
             bindtouchmove="handleTouchMove"
             bindtouchend="handleTouchEnd"></canvas>
 
+        <canvas
+            class="canvas-target"
+            canvas-id="target"
+            style="width:{{cropperOpt.width * pixelRatio}}px;height:{{cropperOpt.height * pixelRatio}}px;left:9999px;position:fixed;"
+        ></canvas>
+
         <view class="options">
             <view class="btn-opt flex-end" bindtap="handleUpload">上传</view>
             <view class="btn-opt">还原</view>
@@ -23,16 +29,17 @@ import wepy from 'wepy';
 import mixin from '../mixins';
 import clipHelper from './clipHelper';
 // import WeCropper from './we-cropper';
-import WeCropper from './mtt-cropper';
+import WeCropper from './we-cropper';
 
 const device = wx.getSystemInfoSync();
-const { windowWidth: deviceW } = device;
+const { windowWidth: deviceW, pixelRatio } = device;
 const deviceH = device.windowHeight;
 const cutWidth = deviceW * 0.9;
 const cutAspectRatio = 4 / 3;
 
 export default class Index extends wepy.page {
     data = {
+        pixelRatio,
         winH: deviceH,
         winW: deviceW,
         cropperOpt: {
@@ -53,6 +60,7 @@ export default class Index extends wepy.page {
         },
         wecropper: null,
         deg: 0,
+        url: '',
     };
     config = {
         navigationBarTitleText: '图片裁剪',
@@ -72,6 +80,7 @@ export default class Index extends wepy.page {
         url = 'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1540379092339&di=b460c53b655a638a48415b3e350a883a&imgtype=0&src=http%3A%2F%2Fimg5.duitang.com%2Fuploads%2Fitem%2F201405%2F31%2F20140531174123_zCPNY.thumb.700_0.jpeg';
 
         const { cropperOpt } = this.data;
+        this.url = url;
 
         this.wecropper = new WeCropper(cropperOpt)
             .on('beforeImageLoad', () => {
@@ -105,12 +114,91 @@ export default class Index extends wepy.page {
             this.wecropper.touchEnd(e);
         },
         handleRotate() {
-            this.wecropper.rotate(90);
+            const { cropperOpt } = this;
+            let {
+                imgLeft, imgTop, scaleWidth, scaleHeight,
+                rectX, rectY,
+            } = this.wecropper; // 获取图片在原画布坐标位置及宽高
+            let {
+                x, y, width, height,
+            } = this.wecropper.cut; // 获取裁剪框位置及大小
+            // 所有参数乘设备像素比
+            imgLeft *= pixelRatio;
+            imgTop *= pixelRatio;
+            scaleWidth *= pixelRatio;
+            scaleHeight *= pixelRatio;
+            x *= pixelRatio;
+            y *= pixelRatio;
+            width *= pixelRatio;
+            height *= pixelRatio;
+            rectX *= pixelRatio;
+            rectY *= pixelRatio;
+
+            const targetCtx = wx.createCanvasContext('target'); // 这里是目标canvas画布的id值
+            targetCtx.save();
+            targetCtx.translate(rectX + scaleWidth / 2, rectY + scaleHeight / 2);
+            targetCtx.rotate(90 * Math.PI / 180);
+            targetCtx.drawImage(this.wecropper.croperTarget, -scaleWidth / 2, -scaleHeight / 2, scaleWidth, scaleHeight);
+            targetCtx.restore();
+            targetCtx.draw(false, () => {
+                wx.canvasToTempFilePath({
+                    canvasId: 'target',
+                    quality: 1,
+                    x: rectX + (scaleWidth - scaleHeight) / 2,
+                    y: rectY + (scaleHeight - scaleWidth) / 2,
+                    width: scaleHeight,
+                    height: scaleWidth,
+                    success: res => {
+                        const tmpPath = res.tempFilePath;
+                        this.wecropper.pushOrigin(tmpPath);
+                    },
+                });
+            });
         },
         handleClip() {
-            this.wecropper.getCropperImage(src => {
-                wx.previewImage({
-                    urls: [src],
+            // this.wecropper.getCropperImage(src => {
+            //     wx.previewImage({
+            //         urls: [src],
+            //     });
+            // });
+            let {
+                imgLeft, imgTop, scaleWidth, scaleHeight,
+            } = this.wecropper; // 获取图片在原画布坐标位置及宽高
+            let {
+                x, y, width, height,
+            } = this.wecropper.cut; // 获取裁剪框位置及大小
+            // 所有参数乘设备像素比
+            imgLeft *= pixelRatio;
+            imgTop *= pixelRatio;
+            scaleWidth *= pixelRatio;
+            scaleHeight *= pixelRatio;
+            x *= pixelRatio;
+            y *= pixelRatio;
+            width *= pixelRatio;
+            height *= pixelRatio;
+
+            const targetCtx = wx.createCanvasContext('target'); // 这里是目标canvas画布的id值
+            targetCtx.drawImage(
+                this.wecropper.croperTarget,
+                imgLeft,
+                imgTop,
+                scaleWidth,
+                scaleHeight,
+            ); // tmp代表被裁剪图片的临时路径
+            targetCtx.draw(false, () => {
+                wx.canvasToTempFilePath({
+                    canvasId: 'target',
+                    x,
+                    y,
+                    width,
+                    height,
+                    success (res) {
+                        const tmpPath = res.tempFilePath;
+                        wx.previewImage({
+                            urls: [tmpPath],
+                        });
+                        console.log(tmpPath);
+                    },
                 });
             });
         },
@@ -143,5 +231,8 @@ view {
 }
 .btn-opt.flex-end {
     align-self: flex-end;
+}
+.canvas-target {
+    border: 2rpx solid red;
 }
 </style>

@@ -169,7 +169,16 @@
             set: function set(value) {
                 tmp.beforeDraw = value;
             }
-        }
+        },
+        onImageRotate: {
+            default: null,
+            get: function get() {
+                return tmp.imageRotate;
+            },
+            set: function set(value) {
+                tmp.imageRotate = value;
+            },
+        },
     };
 
     function prepare() {
@@ -200,7 +209,7 @@
     function observer() {
         var self = this;
 
-        var EVENT_TYPE = ['ready', 'beforeImageLoad', 'beforeDraw', 'imageLoad'];
+        var EVENT_TYPE = ['ready', 'beforeImageLoad', 'beforeDraw', 'imageLoad', 'imageRotate'];
 
         self.on = function(event, fn) {
             if (EVENT_TYPE.indexOf(event) > -1) {
@@ -687,7 +696,6 @@
 
             var ARG_TYPE = toString.call(args[0]);
             var fn = args[args.length - 1];
-
             switch (ARG_TYPE) {
                 case '[object Object]':
                     var ref = args[0];
@@ -1028,26 +1036,7 @@
         self.ctx.rotate(deg * Math.PI / 180);
         self.ctx.drawImage(self.croperTarget, -self.scaleWidth / 2, -self.scaleHeight / 2, self.scaleWidth, self.scaleHeight);
         self.ctx.restore();
-        self.ctx.draw(true);
-
-        self.ctx.beginPath();
-        self.ctx.setStrokeStyle('#ff0000');
-        self.ctx.setLineWidth(2);
-        self.ctx.moveTo(self.rectX + (self.scaleWidth - self.scaleHeight) / 2, self.rectY + (self.scaleHeight - self.scaleWidth) / 2);
-        self.ctx.lineTo(self.rectX + (self.scaleWidth - self.scaleHeight) / 2 + self.scaleHeight, self.rectY + (self.scaleHeight - self.scaleWidth) / 2);
-        self.ctx.stroke();
-        self.ctx.draw(true);
-        self.ctx.save();
-
-        self.ctx.beginPath();
-        self.ctx.setStrokeStyle('#ff0000');
-        self.ctx.setLineWidth(2);
-        self.ctx.moveTo(self.rectX + (self.scaleWidth - self.scaleHeight) / 2, self.rectY + (self.scaleHeight - self.scaleWidth) / 2 + self.scaleWidth);
-        self.ctx.lineTo(self.rectX + (self.scaleWidth - self.scaleHeight) / 2 + self.scaleHeight, self.rectY + (self.scaleHeight - self.scaleWidth) / 2 + self.scaleWidth);
-        self.ctx.stroke();
-        self.ctx.draw(true);
-        self.ctx.save();
-
+        self.ctx.draw();
         self.getCropperImage({
             quality: 10,
             x: self.rectX + (self.scaleWidth - self.scaleHeight) / 2,
@@ -1055,13 +1044,26 @@
             width: self.scaleHeight,
             height: self.scaleWidth,
         }, src => {
-            wx.getImageInfo({
-                src,
-                success(res) {
-                    console.log(res);
-                }
-            })
+            isFunction(self.onImageRotate) && self.onImageRotate(src);
         });
+
+        // self.ctx.beginPath();
+        // self.ctx.setStrokeStyle('#ff0000');
+        // self.ctx.setLineWidth(2);
+        // self.ctx.moveTo(self.rectX + (self.scaleWidth - self.scaleHeight) / 2, self.rectY + (self.scaleHeight - self.scaleWidth) / 2);
+        // self.ctx.lineTo(self.rectX + (self.scaleWidth - self.scaleHeight) / 2 + self.scaleHeight, self.rectY + (self.scaleHeight - self.scaleWidth) / 2);
+        // self.ctx.stroke();
+        // self.ctx.draw(true);
+        // self.ctx.save();
+
+        // self.ctx.beginPath();
+        // self.ctx.setStrokeStyle('#ff0000');
+        // self.ctx.setLineWidth(2);
+        // self.ctx.moveTo(self.rectX + (self.scaleWidth - self.scaleHeight) / 2, self.rectY + (self.scaleHeight - self.scaleWidth) / 2 + self.scaleWidth);
+        // self.ctx.lineTo(self.rectX + (self.scaleWidth - self.scaleHeight) / 2 + self.scaleHeight, self.rectY + (self.scaleHeight - self.scaleWidth) / 2 + self.scaleWidth);
+        // self.ctx.stroke();
+        // self.ctx.draw(true);
+        // self.ctx.save();
     }
 
     var version = "1.2.0";
