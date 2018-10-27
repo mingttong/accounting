@@ -186,6 +186,8 @@
         var ref = getDevice();
         var windowWidth = ref.windowWidth;
 
+        this.totalDeg = 0;
+
         self.attachPage = function() {
             var pages = getCurrentPages();
             //  获取到当前page上下文
@@ -650,6 +652,10 @@
 
                     self.croperTarget = res.path;
 
+                    if (!self.oriTmpPath) {
+                        self.oriTmpPath = res.path;
+                    }
+
                     if (innerAspectRatio < width / height) {
                         self.rectX = x;
                         self.baseWidth = width;
@@ -670,7 +676,10 @@
                     self.updateCanvas();
 
                     isFunction(self.onImageLoad) && self.onImageLoad(self.ctx, self);
-                }
+                },
+                fail(err) {
+                    console.log(err);
+                },
             });
 
             self.update();

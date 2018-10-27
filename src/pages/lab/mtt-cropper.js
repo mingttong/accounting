@@ -671,6 +671,7 @@ export default class Cropper {
             success: res => {
                 this.imageInfo = res;
                 this.croperTarget = res.path;
+                this.oriPath = res.path;
                 this.updateMultiData(res.width / res.height);
 
                 isFunction(this.onImageLoad) && this.onImageLoad(this.ctx, this);

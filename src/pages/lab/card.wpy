@@ -1,0 +1,22 @@
+<template lang="wxml">
+    <view class="container">
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+
+export default class Index extends wepy.page {
+    config = {
+        usingComponents: {
+            drawimage: 'miniprogram-drawimage',
+        },
+    }
+    onLoad() {
+        console.log('onLoad');
+    }
+}
+</script>
+
+<style lang="scss">
+</style>

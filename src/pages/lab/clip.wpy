@@ -114,38 +114,45 @@ export default class Index extends wepy.page {
             this.wecropper.touchEnd(e);
         },
         handleRotate() {
-            const { cropperOpt } = this;
             let {
-                imgLeft, imgTop, scaleWidth, scaleHeight,
+                scaleWidth, scaleHeight,
                 rectX, rectY,
             } = this.wecropper; // 获取图片在原画布坐标位置及宽高
-            let {
-                x, y, width, height,
-            } = this.wecropper.cut; // 获取裁剪框位置及大小
             // 所有参数乘设备像素比
-            imgLeft *= pixelRatio;
-            imgTop *= pixelRatio;
             scaleWidth *= pixelRatio;
             scaleHeight *= pixelRatio;
-            x *= pixelRatio;
-            y *= pixelRatio;
-            width *= pixelRatio;
-            height *= pixelRatio;
             rectX *= pixelRatio;
             rectY *= pixelRatio;
 
+            this.wecropper.totalDeg += 90;
+            console.log(this.wecropper.totalDeg);
+            console.log(this.wecropper);
+
+            if (this.wecropper.totalDeg % 360 === 0) {
+                console.log('yes');
+                this.wecropper.pushOrigin(this.url);
+                this.wecropper.oriPath = 0;
+                return;
+            }
+
             const targetCtx = wx.createCanvasContext('target'); // 这里是目标canvas画布的id值
             targetCtx.save();
-            targetCtx.translate(rectX + scaleWidth / 2, rectY + scaleHeight / 2);
-            targetCtx.rotate(90 * Math.PI / 180);
-            targetCtx.drawImage(this.wecropper.croperTarget, -scaleWidth / 2, -scaleHeight / 2, scaleWidth, scaleHeight);
+            targetCtx.translate(rectX + (scaleWidth / 2), rectY + (scaleHeight / 2));
+            targetCtx.rotate(90 * (Math.PI / 180));
+            targetCtx.drawImage(
+                this.wecropper.croperTarget,
+                -(scaleWidth / 2),
+                -(scaleHeight / 2),
+                scaleWidth,
+                scaleHeight,
+            );
             targetCtx.restore();
             targetCtx.draw(false, () => {
                 wx.canvasToTempFilePath({
                     canvasId: 'target',
                     quality: 1,
-                    x: rectX + (scaleWidth - scaleHeight) / 2,
-                    y: rectY + (scaleHeight - scaleWidth) / 2,
+                    x: rectX + ((scaleWidth - scaleHeight) / 2),
+                    y: rectY + ((scaleHeight - scaleWidth) / 2),
                     width: scaleHeight,
                     height: scaleWidth,
                     success: res => {
