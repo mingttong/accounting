@@ -1,5 +1,4 @@
-import global from '../globalService';
-const baseURL = 'https://fuchyou.com';
+const baseURL = 'https://xxx';
 
 const ajax = (url, method, data = {}, cfg = {}) => {
     const { header, dataType = 'json', timeout = 60000 } = cfg;
@@ -11,15 +10,15 @@ const ajax = (url, method, data = {}, cfg = {}) => {
             dataType,
             header,
             method,
-            success({ errMsg, statusCode, data: { data, errmsg, errno }}) {
+            success({ statusCode, data: { data, errmsg, errno } }) {
                 if (statusCode === 200 && errno === 0) {
                     resolve(data);
                 } else {
-                    reject({ errMsg, errmsg });
+                    reject(new Error(errmsg));
                 }
             },
-            fail(res) {
-                reject({ errMsg: res });
+            fail(err) {
+                reject(new Error(err));
             },
             complete() {
                 // 500ms后才关闭，提升体验
@@ -44,25 +43,22 @@ const ajax = (url, method, data = {}, cfg = {}) => {
     });
 };
 
-const getCode = () => {
-    return new Promise((resolve, reject) => {
-        wx.login({
-            success({ errCode, code }) {
-                if (code) {
-                    resolve(code);
-                } else {
-                    reject(errCode);
-                }
-            },
-            fail(e) {
-                reject(e);
-            },
-        });
+const getCode = () => new Promise((resolve, reject) => {
+    wx.login({
+        success({ errCode, code }) {
+            if (code) {
+                resolve(code);
+            } else {
+                reject(errCode);
+            }
+        },
+        fail(e) {
+            reject(e);
+        },
     });
-}
+});
 
 const getSessionId = async () => {
-
     if (global.get('sessionId')) {
         return global.get('sessionId');
     }
@@ -73,28 +69,26 @@ const getSessionId = async () => {
 
         global.set('sessionId', sessionId);
         return sessionId;
-
     } catch (e) {
         throw e;
     }
-}
+};
 
 /**
  * @desc http不同于ajax的地方在于每次请求都会带上参数sessionId
- * @param {String} url 
- * @param {String} method 
- * @param {Object} data 
- * @param {Object} cfg 
+ * @param {String} url
+ * @param {String} method
+ * @param {Object} data
+ * @param {Object} cfg
  */
 const http = async (url, method = 'GET', data = {}, cfg = {}) => {
-
     try {
         const sessionId = await getSessionId();
         return await ajax(url, method, Object.assign(data, { sessionId }), cfg);
     } catch (e) {
         throw e;
     }
-}
+};
 
 export const get = (url, data, cfg = {}) => http(url, 'GET', data, cfg);
 

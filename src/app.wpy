@@ -11,37 +11,15 @@ export default class extends wepy.app {
         pages: [
             'pages/test',
             'pages/index',
-            'pages/me',
-            'pages/edit',
-            'pages/category',
-            'pages/login',
+            'pages/lab/clip',
+            'pages/lab/clipWebview',
         ],
         window: {
             backgroundTextStyle: 'light',
             navigationBarBackgroundColor: '#333333',
-            navigationBarTitleText: '记账小程序',
+            navigationBarTitleText: '大军师司马懿',
             navigationBarTextStyle: 'white',
         },
-        // tabBar: {
-        //     list: [
-        //         {
-        //             pagePath: 'pages/index',
-        //             text: '账单',
-        //             iconPath: '/assets/bill.png',
-        //             selectedIconPath: '/assets/bill-focus.png',
-        //         },
-        //         {
-        //             pagePath: 'pages/me',
-        //             text: '我的',
-        //             iconPath: '/assets/me.png',
-        //             selectedIconPath: '/assets/me-focus.png',
-        //         },
-        //     ],
-        // },
-    }
-
-    onLaunch() {
-        console.log('on launch');
     }
 }
 </script>

@@ -1,0 +1,238 @@
+<template>
+    <view
+        class="container">
+        <canvas
+            canvas-id="cropper"
+            style="width:{{cropperOpt.width}}px;height:{{cropperOpt.height}}px;left:-{{(winH - winW) / 2}}px;position:fixed;"
+            bindtouchstart="handleTouchStart"
+            bindtouchmove="handleTouchMove"
+            bindtouchend="handleTouchEnd"></canvas>
+
+        <canvas
+            class="canvas-target"
+            canvas-id="target"
+            style="width:{{cropperOpt.width * pixelRatio}}px;height:{{cropperOpt.height * pixelRatio}}px;left:9999px;position:fixed;"
+        ></canvas>
+
+        <view class="options">
+            <view class="btn-opt flex-end" bindtap="handleUpload">上传</view>
+            <view class="btn-opt">还原</view>
+            <view class="btn-opt" bindtap="handleRotate">旋转</view>
+            <view class="btn-opt flex-end" bindtap="handleClip">裁剪</view>
+        </view>
+    </view>
+</template>
+
+<script>
+/* eslint no-underscore-dangle: 0 */
+import wepy from 'wepy';
+import mixin from '../mixins';
+import clipHelper from './clipHelper';
+// import WeCropper from './we-cropper';
+import WeCropper from './we-cropper';
+
+const device = wx.getSystemInfoSync();
+const { windowWidth: deviceW, pixelRatio } = device;
+const deviceH = device.windowHeight;
+const cutWidth = deviceW * 0.9;
+const cutAspectRatio = 4 / 3;
+
+export default class Index extends wepy.page {
+    data = {
+        pixelRatio,
+        winH: deviceH,
+        winW: deviceW,
+        cropperOpt: {
+            id: 'cropper',
+            width: deviceH, // 画布宽度
+            height: deviceH, // 画布高度
+            scale: 2.5, // 最大缩放倍数
+            zoom: 8, // 缩放系数
+            cut: {
+                x: ((deviceH - deviceW) / 2) + ((deviceW - cutWidth) / 2), // 裁剪框x轴起点
+                y: ((deviceH - (cutWidth / cutAspectRatio)) / 2), // 裁剪框y轴期起点
+                width: cutWidth,
+                height: cutWidth / cutAspectRatio,
+            },
+            mask: 'rgba(0, 0, 0, 0.8)',
+            color: '#fff',
+            lineWidth: 1,
+        },
+        wecropper: null,
+        deg: 0,
+        url: '',
+    };
+    config = {
+        navigationBarTitleText: '图片裁剪',
+        backgroundColor: '#fff',
+    };
+    components = {};
+    mixins = [mixin];
+    onLoad() {
+        let url = null;
+        // 宽度超过屏幕的图片
+        // 长度超过屏幕的图片
+        // 平头哥：方形图
+        url = 'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1539953721144&di=f89cc8053fb4a4cad9b85f19c1826505&imgtype=0&src=http%3A%2F%2Fp2.qhimgs4.com%2Ft018d869a2921af105b.jpg';
+        // 平头哥：横图
+        url = 'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1539953685551&di=91749e3a5665d858fa87e622f3a0377c&imgtype=0&src=http%3A%2F%2Fp0.qhimgs4.com%2Ft01c5d5dd72e214ceb6.jpg';
+        // airdrop没关：竖图
+        url = 'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1540379092339&di=b460c53b655a638a48415b3e350a883a&imgtype=0&src=http%3A%2F%2Fimg5.duitang.com%2Fuploads%2Fitem%2F201405%2F31%2F20140531174123_zCPNY.thumb.700_0.jpeg';
+
+        const { cropperOpt } = this.data;
+        this.url = url;
+
+        this.wecropper = new WeCropper(cropperOpt)
+            .on('beforeImageLoad', () => {
+                wx.showLoading();
+            })
+            .on('imageLoad', () => {
+                wx.hideLoading();
+            });
+        this.wecropper.pushOrigin(url);
+    }
+
+    methods = {
+        handleUpload() {
+            wx.chooseImage({
+                success: ({ tempFilePaths }) => {
+                    const path = tempFilePaths[0];
+                    this.wecropper.pushOrigin(path);
+                },
+            });
+        },
+        handleComplete() {
+            clipHelper(this.resultPath);
+        },
+        handleTouchStart(e) {
+            this.wecropper.touchStart(e);
+        },
+        handleTouchMove(e) {
+            this.wecropper.touchMove(e);
+        },
+        handleTouchEnd(e) {
+            this.wecropper.touchEnd(e);
+        },
+        handleRotate() {
+            const { cropperOpt } = this;
+            let {
+                imgLeft, imgTop, scaleWidth, scaleHeight,
+                rectX, rectY,
+            } = this.wecropper; // 获取图片在原画布坐标位置及宽高
+            let {
+                x, y, width, height,
+            } = this.wecropper.cut; // 获取裁剪框位置及大小
+            // 所有参数乘设备像素比
+            imgLeft *= pixelRatio;
+            imgTop *= pixelRatio;
+            scaleWidth *= pixelRatio;
+            scaleHeight *= pixelRatio;
+            x *= pixelRatio;
+            y *= pixelRatio;
+            width *= pixelRatio;
+            height *= pixelRatio;
+            rectX *= pixelRatio;
+            rectY *= pixelRatio;
+
+            const targetCtx = wx.createCanvasContext('target'); // 这里是目标canvas画布的id值
+            targetCtx.save();
+            targetCtx.translate(rectX + scaleWidth / 2, rectY + scaleHeight / 2);
+            targetCtx.rotate(90 * Math.PI / 180);
+            targetCtx.drawImage(this.wecropper.croperTarget, -scaleWidth / 2, -scaleHeight / 2, scaleWidth, scaleHeight);
+            targetCtx.restore();
+            targetCtx.draw(false, () => {
+                wx.canvasToTempFilePath({
+                    canvasId: 'target',
+                    quality: 1,
+                    x: rectX + (scaleWidth - scaleHeight) / 2,
+                    y: rectY + (scaleHeight - scaleWidth) / 2,
+                    width: scaleHeight,
+                    height: scaleWidth,
+                    success: res => {
+                        const tmpPath = res.tempFilePath;
+                        this.wecropper.pushOrigin(tmpPath);
+                    },
+                });
+            });
+        },
+        handleClip() {
+            // this.wecropper.getCropperImage(src => {
+            //     wx.previewImage({
+            //         urls: [src],
+            //     });
+            // });
+            let {
+                imgLeft, imgTop, scaleWidth, scaleHeight,
+            } = this.wecropper; // 获取图片在原画布坐标位置及宽高
+            let {
+                x, y, width, height,
+            } = this.wecropper.cut; // 获取裁剪框位置及大小
+            // 所有参数乘设备像素比
+            imgLeft *= pixelRatio;
+            imgTop *= pixelRatio;
+            scaleWidth *= pixelRatio;
+            scaleHeight *= pixelRatio;
+            x *= pixelRatio;
+            y *= pixelRatio;
+            width *= pixelRatio;
+            height *= pixelRatio;
+
+            const targetCtx = wx.createCanvasContext('target'); // 这里是目标canvas画布的id值
+            targetCtx.drawImage(
+                this.wecropper.croperTarget,
+                imgLeft,
+                imgTop,
+                scaleWidth,
+                scaleHeight,
+            ); // tmp代表被裁剪图片的临时路径
+            targetCtx.draw(false, () => {
+                wx.canvasToTempFilePath({
+                    canvasId: 'target',
+                    x,
+                    y,
+                    width,
+                    height,
+                    success (res) {
+                        const tmpPath = res.tempFilePath;
+                        wx.previewImage({
+                            urls: [tmpPath],
+                        });
+                        console.log(tmpPath);
+                    },
+                });
+            });
+        },
+    }
+}
+</script>
+
+<style lang="scss">
+view {
+    box-sizing: border-box;
+}
+
+.container {
+    background-color: #000;
+    min-height: 100vh;
+    overflow: hidden;
+}
+
+.options {
+    width: 100%;
+    height: 176rpx;
+    display: flex;
+    padding: 0 40rpx 40rpx;
+    justify-content: space-between;
+    position: fixed;
+    bottom: 0;
+
+    font-size: 34rpx;
+    color: #fff;
+}
+.btn-opt.flex-end {
+    align-self: flex-end;
+}
+.canvas-target {
+    border: 2rpx solid red;
+}
+</style>

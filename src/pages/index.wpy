@@ -1,15 +1,15 @@
 <template>
     <view class="container">
-        <view>看我展现什么</view>
-        <view>秒钟{{ deepObj[1][1] }}</view>
-        <view>{{ deepObj.propA.propB.propC }}</view>
-        <view>{{ statusDesc[index][1] }}</view>
-        <button @tap="handleTap">点我改变数据</button>
+        /index.wxml
+        <button @tap="handleToClip">去裁剪</button>
+        <image src="http://tmp/wxc594bc8d2f979bd4.o6zAJsx73XFN7vI_v0xNKxf2-l9E.0J6jYrZyrlDZ79ef535e50358fba8a2e2516bd347b69.png"></image>
     </view>
 </template>
 
 <script>
 import wepy from 'wepy';
+import mixin from './mixins';
+import clipHelper from './lab/clipHelper';
 
 const statusDesc = {
     0: [
@@ -82,16 +82,20 @@ const deepObj = {
 };
 export default class Index extends wepy.page {
     data = {
+<<<<<<< HEAD
         deepObj: {
             1: [1, ''],
         },
         index: 13,
         statusDesc: {},
         seconds: '',
+=======
+>>>>>>> fb34c4a959fd5a1e46a5efe15286291b44d8988f
     };
     config = {
-        backgroundColor: '#EEEEEE',
+        backgroundColor: '#fff',
     };
+<<<<<<< HEAD
 
     onLoad() {
         this.statusDesc = statusDesc;
@@ -114,12 +118,24 @@ export default class Index extends wepy.page {
     methods = {
         async handleTap() {
             
+=======
+    components = {};
+    mixins = [mixin];
+    onLoad() {
+    }
+
+    methods = {
+        async handleToClip() {
+            const result = await clipHelper('original path');
+            console.log(result);
+>>>>>>> fb34c4a959fd5a1e46a5efe15286291b44d8988f
         },
     };
 }
 </script>
 
 <style lang="scss">
+<<<<<<< HEAD
     .container {
         display: flex;
         flex-direction: column;
@@ -132,3 +148,7 @@ export default class Index extends wepy.page {
         }
     }
 </style>
+=======
+@import '../common.scss';
+</style>
+>>>>>>> fb34c4a959fd5a1e46a5efe15286291b44d8988f
