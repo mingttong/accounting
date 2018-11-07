@@ -114,7 +114,7 @@ let originSrc = '';
 
 let rotateCount = 0; // 旋转次数
 
-const getFixedNum = (num, digit = 4) => Math.ceil(num * (10 ** digit)) / 10 ** digit
+const getFixedNum = (num, digit = 4) => Math.ceil(num * (10 ** digit)) / (10 ** digit);
 
 export default class Cropper extends wepy.page {
     config = {
@@ -161,11 +161,10 @@ export default class Cropper extends wepy.page {
 
     events = {
         async 'after-crop'(tempFilePath) {
-            console.log(tempFilePath);
-            // const resourceUrl = await uploadResource(tempFilePath, 'image');
-            // globalService.set('cropperUrl', resourceUrl);
-            // globalService.set('afterCrop', true);
-            // wepy.navigateBack();
+            const resourceUrl = await uploadResource(tempFilePath, 'image');
+            globalService.set('cropperUrl', resourceUrl);
+            globalService.set('afterCrop', true);
+            wepy.navigateBack();
         },
         async 'crop-loadImage'(iSrc, ratio = '1,1', first = false) {
             try {
@@ -194,7 +193,6 @@ export default class Cropper extends wepy.page {
                     originSrc = imageSrc;
                 }
                 const res = await wepy.getImageInfo({ src: imageSrc });
-                console.log(res);
                 innerAspectRadio = getFixedNum(res.width / res.height);
 
                 // 用于canvas2
@@ -254,7 +252,8 @@ export default class Cropper extends wepy.page {
                     // ============
 
                     // 用于canvas2
-                    const drawT = getFixedNum((canvasWidth - (qualityWidth / innerAspectRadio)) / 2);
+                    const drawT = getFixedNum((canvasWidth -
+                        (qualityWidth / innerAspectRadio)) / 2);
                     this.drawT = drawT;
                     this.drawL = 0;
 
@@ -350,11 +349,16 @@ export default class Cropper extends wepy.page {
             const deltaX = (e.touches[0].pageX - pageX) * dragScaleP;
             const deltaY = (e.touches[0].pageY - pageY) * dragScaleP;
             // 移动不能脱离裁剪框
-            const minX = Math.max(getFixedNum(this.cropperL + deltaX), getFixedNum((this.cutL + this.cutW) - this.cropperW));
-            const minY = Math.max(getFixedNum(this.cropperT + deltaY), getFixedNum((this.cutT + this.cutH) - this.cropperH));
+            const minX = Math.max(
+                getFixedNum(this.cropperL + deltaX),
+                getFixedNum((this.cutL + this.cutW) - this.cropperW),
+            );
+            const minY = Math.max(
+                getFixedNum(this.cropperT + deltaY),
+                getFixedNum((this.cutT + this.cutH) - this.cropperH),
+            );
             const maxX = this.cutL;
             const maxY = this.cutT;
-            console.log(maxY, minY);
             this.cropperL = Math.min(maxX, minX);
             this.cropperT = Math.min(maxY, minY);
             this.$apply();
@@ -556,9 +560,6 @@ export default class Cropper extends wepy.page {
                         if (rotateCount % 4 === 0) {
                             url = originSrc;
                         }
-                        wx.previewImage({
-                            urls: [url],
-                        });
                         that.$emit('crop-loadImage', url, that.ratio, false);
                     },
                 });
@@ -576,10 +577,11 @@ export default class Cropper extends wepy.page {
             ctx.draw(false, () => {
                 // 获取画布要裁剪的位置和宽度   均为百分比 * 画布中图片的宽度    保证了在微信小程序中裁剪的图片模糊
                 // 位置不对的问题 canvasT = (that.cutT / that.cropperH) * (that.imageH / pixelRatio)
-                const canvasW = (that.cutW / that.cropperW) * qualityWidth;
-                const canvasH = ((that.cutH / that.cropperH) * qualityWidth) / innerAspectRadio;
-                const canvasL = (that.cutL / that.cropperW) * qualityWidth;
-                const canvasT = ((that.cutT / that.cropperH) * qualityWidth) / innerAspectRadio;
+                const canvasW = that.cutW * (qualityWidth / that.cropperW);
+                const canvasH = (that.cutH * (qualityWidth / that.cropperH)) / innerAspectRadio;
+                const canvasL = (that.cutL - that.cropperL) * (qualityWidth / that.cropperW);
+                const canvasT = ((that.cutT - that.cropperT) *
+                    (qualityWidth / that.cropperH)) / innerAspectRadio;
                 // console.log(`canvasW:${canvasW} --- canvasH: ${canvasH} --- canvasL:
                 // ${canvasL} --- canvasT: ${canvasT} -------- that.imageW: ${
                 //     that.imageW
