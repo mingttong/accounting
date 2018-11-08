@@ -5,7 +5,7 @@
 
 <script>
 import wepy from 'wepy';
-import { post } from '../ajax/index2';
+import { postWithPPU, post, request } from '../ajax/index2';
 
 export default class Index extends wepy.page {
     data = {
@@ -16,10 +16,30 @@ export default class Index extends wepy.page {
     components = {};
     async onLoad() {
         try {
-            await post('/mplogic/index', {
+            // await post('/mplogic/index', {
+            //     mpid: 1032181160874835968,
+            // });
+
+            await postWithPPU('/mplogic/index', {
                 mpid: 1032181160874835968,
             });
+
+            // await request({
+            //     method: 'POST',
+            //     url: '/mplogic/index',
+            //     data: {
+            //         mpid: 1032181160874835968,
+            //     },
+            //     before() {
+            //         console.log('action before-fn');
+            //     },
+            //     after() {
+            //         console.log('action after-fn');
+            //         return false;
+            //     },
+            // });
         } catch (err) {
+            console.log('catch');
             console.log(err);
         }
     }

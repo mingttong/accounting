@@ -22,8 +22,14 @@ class InterceptorManager {
      * 添加拦截器
      * @param {Function} fn
      */
-    use(fulfilled, rejected = err => console.log(err)) {
-        this.hanlders.push({ fulfilled, rejected });
+    use(fulfilled, rejected) {
+        this.hanlders.push({
+            fulfilled,
+            rejected: err => {
+                rejected && rejected();
+                throw err;
+            },
+        });
         return this.hanlders.length - 1;
     }
     forEach(fn) {
@@ -60,7 +66,6 @@ class InterceptorManager {
      */
 const dispatchRequest = (config) => {
     const {
-        method,
         url,
         data,
 
@@ -72,10 +77,17 @@ const dispatchRequest = (config) => {
         before,
         after,
     } = config;
+    let { method } = config;
+    method = method.toUpperCase();
 
     let requestTask = null;
 
     const promise = new Promise((resolve, reject) => {
+        if (before && before() === false) {
+            reject(new Error('before-fn abort'));
+            return null;
+        }
+
         let timer = null;
         requestTask = wx.request({
             url: host + url,
@@ -89,11 +101,22 @@ const dispatchRequest = (config) => {
                 ...header,
             },
             success(res) {
+                if (after && after() === false) {
+                    reject(new Error('after-fn abort'));
+                    return;
+                }
+
                 const data = res;
                 callback && callback(null, data);
+
                 resolve(data);
             },
             fail({ errMsg }) {
+                if (after && after() === false) {
+                    reject(new Error('after-fn abort'));
+                    return;
+                }
+
                 callback && callback(errMsg);
                 reject(errMsg);
             },
@@ -191,13 +214,18 @@ const resInterceptors = [
     // 关闭加载提示
     [
         response => {
+            console.log(1);
             wx.hideNavigationBarLoading && wx.hideNavigationBarLoading();
             return response;
+        },
+        () => {
+            wx.hideNavigationBarLoading && wx.hideNavigationBarLoading();
         },
     ],
     // 输出返回
     [
         response => {
+            console.log(2);
             console.log('请求返回', response);
             return response;
         },
@@ -205,6 +233,7 @@ const resInterceptors = [
     // 根据返回的请求进行操作
     [
         response => {
+            console.log(3);
             const { state, msg } = response.data;
 
             if (state === 100) {
@@ -225,13 +254,19 @@ reqInterceptors.forEach(args => {
     yaofaAjax.interceptors.request.use(...args);
 });
 resInterceptors.forEach(args => {
-    console.log(args);
     yaofaAjax.interceptors.response.use(...args);
 });
 
+// 为了兼容原来的请求reject返回的数据类型，
+// 原来请求是直接返回错误信息，而不是错误对象。
+const request = (...args) => yaofaAjax.request(...args)
+    .catch(err => new Promise((resolve, reject) => {
+        reject(err.message);
+    }));
+
 const get = (...args) => {
     const [url, data, callback] = resolveParams(args);
-    return yaofaAjax.request({
+    return request({
         method: 'GET',
         url,
         data,
@@ -241,7 +276,7 @@ const get = (...args) => {
 
 const post = (...args) => {
     const [url, data, callback] = resolveParams(args);
-    return yaofaAjax.request({
+    return request({
         method: 'POST',
         url,
         data,
@@ -251,7 +286,7 @@ const post = (...args) => {
 const getWithPPU = (...args) => {
     const [url, data, callback] = resolveParams(args);
     const ppu = wx.getStorageSync('ppu');
-    return yaofaAjax.request({
+    return request({
         method: 'GET',
         url,
         data,
@@ -264,7 +299,7 @@ const getWithPPU = (...args) => {
 const postWithPPU = (...args) => {
     const [url, data, callback] = resolveParams(args);
     const ppu = wx.getStorageSync('ppu');
-    return yaofaAjax.request({
+    return request({
         method: 'POST',
         url,
         data,
@@ -274,7 +309,6 @@ const postWithPPU = (...args) => {
         },
     });
 };
-const request = (...args) => yaofaAjax.request(...args);
 
 export {
     get,
