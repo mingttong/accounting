@@ -161,9 +161,10 @@ export default class Cropper extends wepy.page {
 
     events = {
         async 'after-crop'(tempFilePath) {
-            const resourceUrl = await uploadResource(tempFilePath, 'image');
-            globalService.set('cropperUrl', resourceUrl);
-            globalService.set('afterCrop', true);
+            console.log(tempFilePath);
+            // const resourceUrl = await uploadResource(tempFilePath, 'image');
+            // globalService.set('cropperUrl', resourceUrl);
+            // globalService.set('afterCrop', true);
             wepy.navigateBack();
         },
         async 'crop-loadImage'(iSrc, ratio = '1,1', first = false) {

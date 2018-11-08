@@ -1,0 +1,31 @@
+<template>
+    <view class="container">
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+import { post } from '../ajax/index2';
+
+export default class Index extends wepy.page {
+    data = {
+    };
+    config = {
+        backgroundColor: '#fff',
+    };
+    components = {};
+    async onLoad() {
+        try {
+            await post('/mplogic/index', {
+                mpid: 1032181160874835968,
+            });
+        } catch (err) {
+            console.log(err);
+        }
+    }
+}
+</script>
+
+<style lang="scss">
+@import '../common.scss';
+</style>
