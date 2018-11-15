@@ -16,31 +16,54 @@ export default class Index extends wepy.page {
     components = {};
     async onLoad() {
         try {
-            // await post('/mplogic/index', {
-            //     mpid: 1032181160874835968,
-            // });
+            console.log('%c============ post ============', 'color: #DC143C;');
+            await post('/mplogic/index', {
+                mpid: 1032181160874835968,
+            });
+        } catch (err) {
+            console.log('err post', err);
+        }
 
+        try {
+            console.log('%c============ postWithPPU ============', 'color: #4169E1;');
             await postWithPPU('/mplogic/index', {
                 mpid: 1032181160874835968,
             });
-
-            // await request({
-            //     method: 'POST',
-            //     url: '/mplogic/index',
-            //     data: {
-            //         mpid: 1032181160874835968,
-            //     },
-            //     before() {
-            //         console.log('action before-fn');
-            //     },
-            //     after() {
-            //         console.log('action after-fn');
-            //         return false;
-            //     },
-            // });
         } catch (err) {
-            console.log('catch');
-            console.log(err);
+            console.log('err postWithPPU', err);
+        }
+
+        try {
+            console.log('%c=============== request ===============', 'color: #2E8B57;');
+            await request({
+                method: 'POST',
+                url: '/mplogic/index',
+                data: {
+                    mpid: 1032181160874835968,
+                },
+                before() {
+                    console.log('action before-fn');
+                },
+                after() {
+                    console.log('action after-fn');
+                    return false;
+                },
+            });
+        } catch (err) {
+            console.log('err request', err);
+        }
+
+        try {
+            console.log('%c=========== post callback ============', 'color: #FF4500;');
+            post('/mplogic/index', (err, data) => {
+                if (err) {
+                    console.log('err', err);
+                    return;
+                }
+                console.log(data);
+            });
+        } catch (err) {
+            console.log('err post callback', err);
         }
     }
 }

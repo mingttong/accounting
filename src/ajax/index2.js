@@ -147,6 +147,9 @@ class Request {
     }
     request(config) {
         config = Object.assign({}, this.defaultConfig, config);
+        // TODO: 优化
+        config.data = Object.assign({}, this.defaultConfig.data, config.data);
+        config.header = Object.assign({}, this.defaultConfig.header, config.header);
         const chain = [dispatchRequest, undefined];
         let promise = Promise.resolve(config);
 
@@ -259,10 +262,7 @@ resInterceptors.forEach(args => {
 
 // 为了兼容原来的请求reject返回的数据类型，
 // 原来请求是直接返回错误信息，而不是错误对象。
-const request = (...args) => yaofaAjax.request(...args)
-    .catch(err => new Promise((resolve, reject) => {
-        reject(err.message);
-    }));
+const request = (...args) => yaofaAjax.request(...args);
 
 const get = (...args) => {
     const [url, data, callback] = resolveParams(args);
